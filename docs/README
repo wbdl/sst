@@ -1,0 +1,12 @@
+Build the SST docs/website:
+---------------------------
+
+* install sphinx (`$ sudo apt-get install python-sphinx`)
+
+* run `ENV/bin/python docs/make_actions_rst.py`, which will create
+  `docs/actions.rst`
+
+* run `sphinx-build -b html docs sst_docs`
+
+This will produce HTML documentation in the `sst_docs` directory. Open
+`sst_docs/index.html` with your browser.

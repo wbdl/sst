@@ -1,0 +1,11 @@
+* run all tests
+
+  sst-test
+
+* run acceptance tests
+
+  sst-test -i tests.acceptance
+
+* run unit tests
+
+  sst-test -e tests.acceptance

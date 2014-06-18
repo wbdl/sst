@@ -1,0 +1,96 @@
+<html>
+<head>
+    <title>{{ title }}</title>
+    <link rel="stylesheet" type="text/css" href="./static-files/style.css" />
+</head>
+
+<body>
+
+
+  <h2 id="headline">Foo bar baz</h2>
+
+  <p class="unique_class" id="some_id">Some text here</p>
+  <p class="some_class">More text</p>
+  <p class="some_class">And yet more</p>
+
+  <a class="link class a1" id="the_band_link" href="/">Here is a link</a>
+
+  <form method="post" action="/begin">
+
+    <p>
+      Radio buttons with id:<br />
+      <label id="label1"><input type="radio" name="radio_with_id" value="first" checked="1"
+              id="radio_with_id_1" /> First</label><br />
+      <label><input type="radio" name="radio_with_id" value="second"
+              id="radio_with_id_2" /> Second</label><br />
+      <label><input type="radio" name="radio_with_id" value="unique"
+              id="radio_with_id_3" /> Third</label><br />
+    </p>
+
+    <p>
+      Radio buttons without id:<br />
+      <label><input type="radio" name="radio_without_id" value="first"
+              checked="1" /> First</label><br />
+      <label><input type="radio" name="radio_without_id" value="second"
+              /> Second</label><br />
+    </p>
+
+    <p>
+    Also request:
+    <table>
+      <tr>
+        <td><input type="checkbox" name="sreg" id="id_sreg" /></td>
+        <td><label for="id_sreg">SREG data</label></td>
+      </tr>
+      <tr>
+        <td />
+
+        <td>
+          <table>
+            <tr>
+              <td><input type="checkbox" name="sreg_country" id="id_sreg_country" /></td>
+              <td><label for="id_sreg_country">Country</label></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" name="sreg_dob" id="id_sreg_dob" /></td>
+
+              <td><label for="id_sreg_dob">Date of Birth</label></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" name="sreg_gender" id="id_sreg_gender" /></td>
+              <td><label for="id_sreg_gender">Gender</label></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" name="sreg_language" id="id_sreg_language" /></td>
+
+              <td><label for="id_sreg_language">Language</label></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" name="sreg_nickname" id="id_sreg_nickname" /></td>
+              <td><label for="id_sreg_nickname">Nickname</label></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" name="sreg_postalcode" id="id_sreg_postalcode" /></td>
+
+              <td><label for="id_sreg_postalcode">Postal Code</label></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" name="sreg_timezone" id="id_sreg_timezone" /></td>
+              <td><label for="id_sreg_timezone">Time Zone</label></td>
+            </tr>
+          </table>
+        </td>
+
+      </tr>
+      <tr>
+        <td><input type="checkbox" name="teams" id="id_teams" /></td>
+        <td><label for="id_teams">Teams data</label></td>
+      </tr>
+    </table>
+    </p>
+
+    <input type="submit" value="Begin" id="mainform" />
+
+  </form>
+</body>
+</html>
