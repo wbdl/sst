@@ -555,6 +555,14 @@ def write_textfield(id_or_elem, new_text, check=True, clear=True):
         textfield.send_keys(keys.Keys().CONTROL, 'a')
         textfield.send_keys(keys.Keys().DELETE)
 
+        # added check to see if send_keys actually worked, if not, try clear()
+        current_text = textfield.get_attribute('value')
+        if current_text:
+            msg = 'Textfield: %r - did not clear using send_keys().  Executing clear() instead.' \
+            % (_element_to_string(textfield))
+            logger.debug(msg)
+            textfield.clear()
+
     if isinstance(new_text, unicode):
         textfield.send_keys(new_text)
     else:
