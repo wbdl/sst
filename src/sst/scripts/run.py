@@ -24,6 +24,8 @@ import sys
 
 import testtools
 
+from sst import config
+
 testtools.try_import('selenium')
 
 from sst import (
@@ -46,7 +48,9 @@ def main():
         cleaner.add('stopping virtual display...\n', display.stop)
 
     with cleaner:
-        results_directory = os.path.abspath('results')
+        results_directory = config.results_directory
+        if not results_directory:
+            results_directory = os.path.abspath('results')
         command.reset_directory(results_directory)
         factory = browsers.browser_factories.get(cmd_opts.browser_type)
         failures = runtests.runtests(
