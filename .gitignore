@@ -57,6 +57,9 @@ functest.wpu
 MANIFEST
 nosetests.xml
 pep8.log
+
+# sst
+config.py
 results
 src/sst.egg-info
 sst-deps
