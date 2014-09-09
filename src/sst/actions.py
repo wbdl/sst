@@ -256,8 +256,6 @@ def save_page_source(filename='pagedump.html', add_timestamp=True):
     _make_results_dir()
     if add_timestamp:
         filename = _add_time_stamp(filename)
-    # FIXME: Urgh, config.results_directory is a global set in
-    # runtests() -- vila 2012-10-29
     page_source_file = os.path.join(config.results_directory, filename)
     with codecs.open(page_source_file, 'w', encoding='utf-8') as f:
         f.write(get_page_source())
