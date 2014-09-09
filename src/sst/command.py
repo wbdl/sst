@@ -103,6 +103,9 @@ def get_common_options():
     parser.add_option('-e', '--exclude', dest='excludes',
                       action='append',
                       help='all tests matching this regex will not be run')
+    parser.add_option('-o', dest='results_directory',
+                      default=None,
+                      help='directory to output results to')
     return parser
 
 

@@ -47,6 +47,9 @@ def main():
         display.start()
         cleaner.add('stopping virtual display...\n', display.stop)
 
+    if cmd_opts.results_directory:
+        config.results_directory = cmd_opts.results_directory
+
     with cleaner:
         results_directory = config.results_directory
         if not results_directory:
