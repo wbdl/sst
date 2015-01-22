@@ -51,7 +51,7 @@ from functools import wraps
 from pdb import set_trace as debug
 from urlparse import urljoin, urlparse
 
-from selenium.webdriver.common import keys
+from selenium.webdriver.common import action_chains, keys
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.common.exceptions import (
     NoSuchAttributeException,
