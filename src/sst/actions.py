@@ -51,7 +51,7 @@ from functools import wraps
 from pdb import set_trace as debug
 from urlparse import urljoin, urlparse
 
-from selenium.webdriver.common import keys
+from selenium.webdriver.common import action_chains, keys
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.common.exceptions import (
     NoSuchAttributeException,
@@ -1766,3 +1766,15 @@ def get_element_source(id_or_elem):
     """
     elem = _get_elem(id_or_elem)
     return elem.get_attribute('innerHTML')
+
+
+def hover_over_element(id_or_elem):
+    """Hover over an element using Selenium ActionChains.
+
+    :argument id_or_elem: The identifier of the element, or its element object.
+
+    """
+    elem = _get_elem(id_or_elem)
+    action = action_chains.ActionChains(_test.browser)
+    action.move_to_element(elem)
+    action.perform()
