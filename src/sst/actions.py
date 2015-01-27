@@ -53,6 +53,8 @@ from urlparse import urljoin, urlparse
 
 from selenium.webdriver.common import action_chains, keys
 from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import (
     NoSuchAttributeException,
     NoSuchElementException,
@@ -81,11 +83,12 @@ __all__ = [
     'get_element_by_css', 'get_element_by_xpath', 'get_element_source',
     'get_elements', 'get_elements_by_css', 'get_elements_by_xpath',
     'get_link_url', 'get_page_source', 'get_text', 'get_wait_timeout',
-    'get_window_size', 'go_back', 'go_to', 'hover_over_element', 'refresh',
-    'reset_base_url', 'retry_on_exception', 'run_test', 'save_page_source',
-    'set_base_url', 'set_checkbox_value', 'set_dropdown_value', 'set_radio_value',
-    'set_wait_timeout', 'set_window_size', 'simulate_keys', 'skip', 'sleep',
-    'switch_to_frame', 'switch_to_window', 'take_screenshot', 'toggle_checkbox',
+    'get_window_size', 'go_back', 'go_to', 'hover_over_element',
+    'poll_for_visibility', 'refresh', 'reset_base_url', 'retry_on_exception',
+    'run_test', 'save_page_source', 'set_base_url', 'set_checkbox_value',
+    'set_dropdown_value', 'set_radio_value', 'set_wait_timeout',
+    'set_window_size', 'simulate_keys', 'skip', 'sleep', 'switch_to_frame',
+    'switch_to_window', 'take_screenshot', 'toggle_checkbox',
     'wait_for', 'wait_for_and_refresh', 'write_textfield'
 ]
 
@@ -1777,3 +1780,20 @@ def hover_over_element(id_or_elem):
     action = action_chains.ActionChains(_test.browser)
     action.move_to_element(elem)
     action.perform()
+
+def poll_for_visibility(id_or_elem, wait=10, frequency=1):
+    """Use WebDriverWait with expected_conditions to poll for an element to
+    become visible.
+    :argument id_or_elem: The identifier of the element, or its element object.
+    :argument wait: The amount of seconds to wait before throwing a TimeoutException.
+    :argument frequency: The amount of seconds between each poll.
+    :return: The WebElement object that is displayed.
+    :raise: AssertionError if the WebElement object did not become visible.
+
+    """
+    try:
+        elem = _get_elem(id_or_elem)
+        visible_elem = WebDriverWait(_test.browser, wait, poll_frequency=frequency).until(EC.visibility_of(elem))
+        return visible_elem
+    except:
+        _raise("Element is not visible. {}.is_displayed: {}".format(elem, elem.is_displayed()))
