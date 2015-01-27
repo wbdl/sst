@@ -1796,4 +1796,4 @@ def poll_for_visibility(id_or_elem, wait=10, frequency=1):
         visible_elem = WebDriverWait(_test.browser, wait, poll_frequency=frequency).until(EC.visibility_of(elem))
         return visible_elem
     except:
-        _raise("Element is not visible. {}".format(elem))
+        _raise("Element is not visible. {}".format(elem.is_displayed))
