@@ -1804,15 +1804,15 @@ def poll_for_exists(locator, wait=10, frequency=1):
     become present.
     :argument locator: A locator from selenium.webdriver.common.by
     :argument wait: The amount of seconds to wait before throwing a
-    timeoutException.
+    TimeoutException.
     :argument frequency: The amount of seconds between each poll.
     :return: The WebElement object that was polled for.
-    :raise: AssertionError is the WebElement object does not exist after wait
+    :raise: AssertionError if the WebElement object does not exist after wait
     period.
 
     """
     try:
-        elm = WebDriverWait(_test.browser, wait, poll_frequency=frequency).until(EC.presence_of_element_located(locator))
-        return elm
+        elem = WebDriverWait(_test.browser, wait, poll_frequency=frequency).until(EC.presence_of_element_located(locator))
+        return elem
     except:
         _raise("Element not found with locator {}.".format(locator))
