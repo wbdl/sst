@@ -84,11 +84,11 @@ __all__ = [
     'get_elements', 'get_elements_by_css', 'get_elements_by_xpath',
     'get_link_url', 'get_page_source', 'get_text', 'get_wait_timeout',
     'get_window_size', 'go_back', 'go_to', 'hover_over_element',
-    'poll_for_visibility', 'refresh', 'reset_base_url', 'retry_on_exception',
-    'run_test', 'save_page_source', 'set_base_url', 'set_checkbox_value',
-    'set_dropdown_value', 'set_radio_value', 'set_wait_timeout',
-    'set_window_size', 'simulate_keys', 'skip', 'sleep', 'switch_to_frame',
-    'switch_to_window', 'take_screenshot', 'toggle_checkbox',
+    'poll_for_exists', 'poll_for_visibility', 'refresh', 'reset_base_url',
+    'retry_on_exception', 'run_test', 'save_page_source', 'set_base_url',
+    'set_checkbox_value', 'set_dropdown_value', 'set_radio_value',
+    'set_wait_timeout', 'set_window_size', 'simulate_keys', 'skip', 'sleep',
+    'switch_to_frame', 'switch_to_window', 'take_screenshot', 'toggle_checkbox',
     'wait_for', 'wait_for_and_refresh', 'write_textfield'
 ]
 
@@ -1785,7 +1785,8 @@ def poll_for_visibility(id_or_elem, wait=10, frequency=1):
     """Use WebDriverWait with expected_conditions to poll for an element to
     become visible.
     :argument id_or_elem: The identifier of the element, or its element object.
-    :argument wait: The amount of seconds to wait before throwing a TimeoutException.
+    :argument wait: The amount of seconds to wait before throwing a
+    TimeoutException.
     :argument frequency: The amount of seconds between each poll.
     :return: The WebElement object that is displayed.
     :raise: AssertionError if the WebElement object did not become visible.
@@ -1797,3 +1798,21 @@ def poll_for_visibility(id_or_elem, wait=10, frequency=1):
         return visible_elem
     except:
         _raise("Element is not visible. {}.is_displayed: {}".format(elem, elem.is_displayed()))
+
+def poll_for_exists(locator, wait=10, frequency=1):
+    """use WebDriverWait with expected_conditions to poll for an element to
+    become present.
+    :argument locator: A locator from selenium.webdriver.common.by
+    :argument wait: The amount of seconds to wait before throwing a
+    TimeoutException.
+    :argument frequency: The amount of seconds between each poll.
+    :return: The WebElement object that was polled for.
+    :raise: AssertionError if the WebElement object does not exist after wait
+    period.
+
+    """
+    try:
+        elem = WebDriverWait(_test.browser, wait, poll_frequency=frequency).until(EC.presence_of_element_located(locator))
+        return elem
+    except:
+        _raise("Element not found with locator {}.".format(locator))
