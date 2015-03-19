@@ -1824,6 +1824,7 @@ def poll_for_not_stale(id_or_elem, wait=10, frequency=1):
     :argument wait: The amount of seconds to wait before throwing a
     TimeoutException.
     :argument frequency: The amount of seconds between each poll.
+    :return: The WebElement object that was polled for.
 
     """
     elem = _get_elem(id_or_elem)
@@ -1838,3 +1839,5 @@ def poll_for_not_stale(id_or_elem, wait=10, frequency=1):
     msg = 'Timeout waiting for element to not be stale.'
     (WebDriverWait(driver, wait, poll_frequency=frequency)
                    .until(wait_for_not_stale, msg))
+
+    return elem
