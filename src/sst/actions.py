@@ -1816,3 +1816,25 @@ def poll_for_exists(locator, wait=10, frequency=1):
         return elem
     except:
         _raise("Element not found with locator {}.".format(locator))
+
+def poll_for_not_stale(id_or_elem, wait=10, frequency=1):
+    """Use WebDriverWait with a custom condition with exception handling for
+    StaleElementReferenceException to poll for an element to become not stale.
+    :argument id_or_elem: The identifier of the element, or its element object.
+    :argument wait: The amount of seconds to wait before throwing a
+    TimeoutException.
+    :argument frequency: The amount of seconds between each poll.
+
+    """
+    elem = _get_elem(id_or_elem)
+    driver = _test.browser
+    def wait_for_not_stale(driver):
+        try:
+            elem.is_displayed()
+            return True
+        except StaleElementReferenceException:
+            return False
+
+    msg = 'Timeout waiting for element to not be stale.'
+    (WebDriverWait(driver, wait, poll_frequency=frequency)
+                   .until(wait_for_not_stale, msg))
