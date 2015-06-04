@@ -1794,10 +1794,10 @@ def poll_for_visibility(id_or_elem, wait=10, frequency=1):
     """
     try:
         elem = _get_elem(id_or_elem)
-        visible_elem = WebDriverWait(_test.browser, wait, poll_frequency=frequency).until(EC.visibility_of(elem))
-        return visible_elem
+        return (WebDriverWait(_test.browser, wait, poll_frequency=frequency)
+               .until(EC.visibility_of(elem)))
     except:
-        _raise("Element is not visible. {}.is_displayed: {}".format(elem, elem.is_displayed()))
+        _raise("Element {} did not become visible.".format(elem))
 
 def poll_for_exists(locator, wait=10, frequency=1):
     """use WebDriverWait with expected_conditions to poll for an element to
@@ -1812,8 +1812,8 @@ def poll_for_exists(locator, wait=10, frequency=1):
 
     """
     try:
-        elem = WebDriverWait(_test.browser, wait, poll_frequency=frequency).until(EC.presence_of_element_located(locator))
-        return elem
+        return (WebDriverWait(_test.browser, wait, poll_frequency=frequency)
+               .until(EC.presence_of_element_located(locator)))
     except:
         _raise("Element not found with locator {}.".format(locator))
 
