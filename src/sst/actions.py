@@ -1797,7 +1797,7 @@ def poll_for_visibility(id_or_elem, wait=10, frequency=1):
         return (WebDriverWait(_test.browser, wait, poll_frequency=frequency)
                .until(EC.visibility_of(elem)))
     except:
-        _raise("Element %r did not become visible." % (elem))
+        _raise("Element {} did not become visible.".format(elem))
 
 def poll_for_exists(locator, wait=10, frequency=1):
     """use WebDriverWait with expected_conditions to poll for an element to
@@ -1815,7 +1815,7 @@ def poll_for_exists(locator, wait=10, frequency=1):
         return (WebDriverWait(_test.browser, wait, poll_frequency=frequency)
                .until(EC.presence_of_element_located(locator)))
     except:
-        _raise("Element not found with locator %r." % (locator))
+        _raise("Element not found with locator {}.".format(locator))
 
 def poll_for_not_stale(id_or_elem, wait=10, frequency=1):
     """Use WebDriverWait with a custom condition with exception handling for
