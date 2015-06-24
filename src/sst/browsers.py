@@ -198,6 +198,7 @@ class FirefoxFactory(BrowserFactory):
         profile.set_preference('browser.download.folderList', 1)
         profile.set_preference('browser.download.manager.showWhenStarting', False)
         profile.set_preference('browser.download.manager.useWindow', False)
+        profile.set_preference('browser.helperApps.neverAsk.saveToDisk', 'text/csv')
         if test.assume_trusted_cert_issuer:
             profile.set_preference('webdriver_assume_untrusted_issuer', False)
             profile.set_preference(
