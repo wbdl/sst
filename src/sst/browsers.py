@@ -195,6 +195,7 @@ class FirefoxFactory(BrowserFactory):
     def setup_for_test(self, test):
         profile = webdriver.FirefoxProfile()
         profile.set_preference('intl.accept_languages', 'en')
+        profile.set_preference('browser.download.folderList', 1)
         profile.set_preference('browser.download.manager.showWhenStarting', False)
         profile.set_preference('browser.download.manager.useWindow', False)
         if test.assume_trusted_cert_issuer:
