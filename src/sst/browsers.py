@@ -196,6 +196,7 @@ class FirefoxFactory(BrowserFactory):
         profile = webdriver.FirefoxProfile()
         profile.set_preference('intl.accept_languages', 'en')
         profile.set_preference('browser.download.manager.showWhenStarting', False)
+        profile.set_preference('browser.download.manager.useWindow', False)
         if test.assume_trusted_cert_issuer:
             profile.set_preference('webdriver_assume_untrusted_issuer', False)
             profile.set_preference(
