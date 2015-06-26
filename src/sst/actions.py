@@ -1829,9 +1829,8 @@ def poll_for_staleness(id_or_elem, wait=10, frequency=1):
 
     """
     elem = _get_elem(id_or_elem)
-    driver = _test.browser
     try:
-        return (WebDriverWait(driver, wait, poll_frequency=frequency)
+        return (WebDriverWait(_test.browser, wait, poll_frequency=frequency)
                .until(EC.staleness_of(elem)))
     except:
         _raise("Element was not removed from the DOM.")
@@ -1847,7 +1846,6 @@ def poll_for_not_stale(id_or_elem, wait=10, frequency=1):
 
     """
     elem = _get_elem(id_or_elem)
-    driver = _test.browser
     def wait_for_not_stale(driver):
         try:
             elem.is_displayed()
@@ -1856,7 +1854,7 @@ def poll_for_not_stale(id_or_elem, wait=10, frequency=1):
             return False
 
     msg = 'Timeout waiting for element to not be stale.'
-    (WebDriverWait(driver, wait, poll_frequency=frequency)
+    (WebDriverWait(_test.browser, wait, poll_frequency=frequency)
                    .until(wait_for_not_stale, msg))
 
     return elem
