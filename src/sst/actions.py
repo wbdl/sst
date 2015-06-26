@@ -84,12 +84,13 @@ __all__ = [
     'get_elements', 'get_elements_by_css', 'get_elements_by_xpath',
     'get_link_url', 'get_page_source', 'get_text', 'get_wait_timeout',
     'get_window_size', 'go_back', 'go_to', 'hover_over_element',
-    'poll_for_exists', 'poll_for_not_stale', 'poll_for_visibility', 'refresh',
-    'reset_base_url', 'retry_on_exception', 'run_test', 'save_page_source',
-    'set_base_url', 'set_checkbox_value', 'set_dropdown_value',
-    'set_radio_value', 'set_wait_timeout', 'set_window_size', 'simulate_keys',
-    'skip', 'sleep', 'switch_to_frame', 'switch_to_window', 'take_screenshot',
-    'toggle_checkbox', 'wait_for', 'wait_for_and_refresh', 'write_textfield'
+    'poll_for_exists', 'poll_for_not_stale', 'poll_for_staleness',
+    'poll_for_visibility', 'refresh', 'reset_base_url', 'retry_on_exception',
+    'run_test', 'save_page_source', 'set_base_url', 'set_checkbox_value',
+    'set_dropdown_value', 'set_radio_value', 'set_wait_timeout',
+    'set_window_size', 'simulate_keys', 'skip', 'sleep', 'switch_to_frame',
+    'switch_to_window', 'take_screenshot', 'toggle_checkbox', 'wait_for',
+    'wait_for_and_refresh', 'write_textfield'
 ]
 
 
@@ -1816,6 +1817,23 @@ def poll_for_exists(locator, wait=10, frequency=1):
                .until(EC.presence_of_element_located(locator)))
     except:
         _raise("Element not found with locator {}.".format(locator))
+
+def poll_for_staleness(id_or_elem, wait=10, frequency=1):
+    """Use WebDriverWait with expected_conditions.staleness_of to wait for an
+    element to be no longer attached to the DOM.
+    :argument id_or_elem: The identifier of the element, or its element object.
+    :argument wait: The amount of seconds to wait before throwing a
+    TimeoutException.
+    :argument frequency: The amount of seconds between each poll.
+    :return: False if the element is still attached to the DOM, true otherwise.
+
+    """
+    elem = _get_elem(id_or_elem)
+    driver = _test.browser
+    try:
+        return WebDriverWait(driver, 10).until(EC.staleness_of(elem))
+    except:
+        _raise("Element was not removed from the DOM.")
 
 def poll_for_not_stale(id_or_elem, wait=10, frequency=1):
     """Use WebDriverWait with a custom condition with exception handling for
