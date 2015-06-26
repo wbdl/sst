@@ -1831,7 +1831,8 @@ def poll_for_staleness(id_or_elem, wait=10, frequency=1):
     elem = _get_elem(id_or_elem)
     driver = _test.browser
     try:
-        return WebDriverWait(driver, 10).until(EC.staleness_of(elem))
+        return (WebDriverWait(driver, wait, poll_frequency=frequency)
+               .until(EC.staleness_of(elem)))
     except:
         _raise("Element was not removed from the DOM.")
 
