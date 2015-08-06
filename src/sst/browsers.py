@@ -30,6 +30,7 @@ from selenium.webdriver.firefox import (
     firefox_binary,
     webdriver as ff_webdriver,
 )
+from selenium.webdriver.chrome.options import Options
 
 
 logger = logging.getLogger('SST')
@@ -82,6 +83,16 @@ class RemoteBrowserFactory(BrowserFactory):
 class ChromeFactory(BrowserFactory):
 
     webdriver_class = webdriver.Chrome
+
+    def __init__(self):
+        (ChromeFactory, self).__init__()
+        chrome_options = Options()
+        chrome_options.add_argument("test-type")
+        self.capabilities = chrome_options.to_capabilities()
+
+    def browser(self):
+        logger.debug("Chrome capabilities: {}".format(self.capabilities))
+        return self.webdriver_class(desired_capabilities=self.capabilities)
 
 
 # MISSINGTEST: Exercise this class (requires windows) -- vila 2013-04-11
