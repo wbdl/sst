@@ -88,8 +88,9 @@ __all__ = [
     'poll_for_visibility', 'refresh', 'reset_base_url', 'retry_on_exception',
     'run_test', 'save_page_source', 'set_base_url', 'set_checkbox_value',
     'set_dropdown_value', 'set_radio_value', 'set_wait_timeout',
-    'set_window_size', 'simulate_keys', 'skip', 'sleep', 'switch_to_frame',
-    'switch_to_window', 'take_screenshot', 'toggle_checkbox', 'wait_for',
+    'set_window_size', 'simulate_keys', 'skip', 'sleep',
+    'switch_to_active_window', 'switch_to_frame', 'switch_to_window',
+    'take_screenshot', 'toggle_checkbox', 'wait_for',
     'wait_for_and_refresh', 'write_textfield'
 ]
 
@@ -1418,6 +1419,10 @@ def switch_to_window(index_or_name=None):
             msg = 'Could not find window: %r' % name
             _raise(msg)
 
+def switch_to_active_window():
+    """Switch focus to the most recently opened window."""
+    driver = _test.browser
+    driver.switch_to_window(driver.window_handles[-1])
 
 def switch_to_frame(index_or_name=None):
     """Switch focus to a frame.
