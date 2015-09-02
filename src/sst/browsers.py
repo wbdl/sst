@@ -84,8 +84,7 @@ class ChromeFactory(BrowserFactory):
 
     webdriver_class = webdriver.Chrome
 
-    def __init__(self):
-        (ChromeFactory, self).__init__()
+    def setup_for_test(self, test):
         chrome_options = Options()
         chrome_options.add_argument("test-type")
         self.capabilities = chrome_options.to_capabilities()
