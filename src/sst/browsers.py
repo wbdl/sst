@@ -87,12 +87,12 @@ class ChromeFactory(BrowserFactory):
     def setup_for_test(self, test):
         chrome_options = Options()
         chrome_options.add_argument("test-type")
+        chrome_options.add_argument("disable-gpu")
         self.capabilities = chrome_options.to_capabilities()
+        logger.debug("Chrome capabilities: {}".format(self.capabilities))
 
     def browser(self):
-        logger.debug("Chrome capabilities: {}".format(self.capabilities))
         return self.webdriver_class(desired_capabilities=self.capabilities)
-
 
 # MISSINGTEST: Exercise this class (requires windows) -- vila 2013-04-11
 class IeFactory(BrowserFactory):
