@@ -38,7 +38,7 @@ class TextTestResult(testresult.TextTestResult):
         if self.verbose:
             elapsed_time = self._now() - self.start_time
             self.stream.write(' (%.3f secs)\n'
-                              % self._delta_to_float(elapsed_time))
+                              % self._delta_to_float(elapsed_time, 3))
             self.stream.flush()
         super(TextTestResult, self).stopTest(test)
 
