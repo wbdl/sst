@@ -210,6 +210,7 @@ class FirefoxFactory(BrowserFactory):
         profile.set_preference('browser.download.manager.useWindow', False)
         profile.set_preference('browser.helperApps.neverAsk.saveToDisk', 'text/csv')
         profile.set_preference('reader.parse-on-load.enabled', False)
+        profile.set_preference('network.http.response.timeout', 60)
         if test.assume_trusted_cert_issuer:
             profile.set_preference('webdriver_assume_untrusted_issuer', False)
             profile.set_preference(
