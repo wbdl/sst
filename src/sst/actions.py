@@ -61,6 +61,7 @@ from selenium.common.exceptions import (
     NoSuchFrameException,
     NoSuchWindowException,
     StaleElementReferenceException,
+    TimeoutException,
     WebDriverException,
 )
 
@@ -84,11 +85,11 @@ __all__ = [
     'get_elements', 'get_elements_by_css', 'get_elements_by_xpath',
     'get_link_url', 'get_page_source', 'get_text', 'get_wait_timeout',
     'get_window_size', 'go_back', 'go_to', 'hover_over_element',
-    'poll_for_exists', 'poll_for_not_stale', 'poll_for_staleness',
-    'poll_for_visibility', 'refresh', 'reset_base_url', 'retry_on_exception',
-    'run_test', 'save_page_source', 'set_base_url', 'set_checkbox_value',
-    'set_dropdown_value', 'set_radio_value', 'set_wait_timeout',
-    'set_window_size', 'simulate_keys', 'skip', 'sleep',
+    'poll_for_element', 'poll_for_exists', 'poll_for_not_stale',
+    'poll_for_staleness', 'poll_for_visibility', 'refresh', 'reset_base_url',
+    'retry_on_exception', 'run_test', 'save_page_source', 'set_base_url',
+    'set_checkbox_value', 'set_dropdown_value', 'set_radio_value',
+    'set_wait_timeout', 'set_window_size', 'simulate_keys', 'skip', 'sleep',
     'switch_to_active_window', 'switch_to_frame', 'switch_to_window',
     'take_screenshot', 'toggle_checkbox', 'wait_for',
     'wait_for_and_refresh', 'write_textfield'
@@ -1798,12 +1799,15 @@ def poll_for_visibility(id_or_elem, wait=10, frequency=1):
     :raise: AssertionError if the WebElement object did not become visible.
 
     """
+    elem_string = None
+
     try:
         elem = _get_elem(id_or_elem)
+        elem_string = _element_to_string(elem)
         return (WebDriverWait(_test.browser, wait, poll_frequency=frequency)
                .until(EC.visibility_of(elem)))
-    except:
-        _raise("Element {} did not become visible.".format(elem))
+    except TimeoutException:
+        _raise("Element {} did not become visible.".format(elem_string))
 
 def poll_for_exists(locator, wait=10, frequency=1):
     """use WebDriverWait with expected_conditions to poll for an element to
@@ -1820,7 +1824,7 @@ def poll_for_exists(locator, wait=10, frequency=1):
     try:
         return (WebDriverWait(_test.browser, wait, poll_frequency=frequency)
                .until(EC.presence_of_element_located(locator)))
-    except:
+    except TimeoutException:
         _raise("Element not found with locator {}.".format(locator))
 
 def poll_for_staleness(id_or_elem, wait=10, frequency=1):
@@ -1837,7 +1841,7 @@ def poll_for_staleness(id_or_elem, wait=10, frequency=1):
     try:
         return (WebDriverWait(_test.browser, wait, poll_frequency=frequency)
                .until(EC.staleness_of(elem)))
-    except:
+    except TimeoutException:
         _raise("Element was not removed from the DOM.")
 
 def poll_for_not_stale(id_or_elem, wait=10, frequency=1):
@@ -1864,3 +1868,19 @@ def poll_for_not_stale(id_or_elem, wait=10, frequency=1):
                    .until(wait_for_not_stale, msg))
 
     return elem
+
+def poll_for_element(locator, wait=10, frequency=1):
+    """Use WebDriverWait with a custom condition with exception handling
+    to poll for an element to be present on the page and visible.
+    :argument locator: A locator from selenium.webdriver.common.by
+    :argument wait: The amount of seconds to wait before throwing a
+    TimeoutException.
+    :argument frequency: The amount of seconds between each poll.
+    :return: The WebElement object that was polled for.
+
+    """
+    try:
+        return (WebDriverWait(_test.browser, wait, poll_frequency=frequency)
+               .until(EC.visibility_of_element_located(locator)))
+    except TimeoutException:
+        _raise("Element not found with locator {}.".format(locator))
