@@ -87,7 +87,6 @@ class ChromeFactory(BrowserFactory):
     def setup_for_test(self, test):
         chrome_options = Options()
         chrome_options.add_argument("test-type")
-        chrome_options.add_argument("disable-gpu")
         self.capabilities = chrome_options.to_capabilities()
         logger.debug("Chrome capabilities: {}".format(self.capabilities))
 
