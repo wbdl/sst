@@ -88,10 +88,10 @@ __all__ = [
     'poll_for_element', 'poll_for_exists', 'poll_for_not_stale',
     'poll_for_staleness', 'poll_for_visibility', 'refresh', 'reset_base_url',
     'retry_on_exception', 'run_test', 'save_page_source', 'set_base_url',
-    'set_checkbox_value', 'set_dropdown_value', 'set_radio_value',
-    'set_wait_timeout', 'set_window_size', 'simulate_keys', 'skip', 'sleep',
-    'switch_to_active_window', 'switch_to_frame', 'switch_to_window',
-    'take_screenshot', 'toggle_checkbox', 'wait_for',
+    'set_checkbox_value', 'set_dropdown_value', 'set_page_load_timeout',
+    'set_radio_value', 'set_wait_timeout', 'set_window_size', 'simulate_keys',
+    'skip', 'sleep', 'switch_to_active_window', 'switch_to_frame',
+    'switch_to_window', 'take_screenshot', 'toggle_checkbox', 'wait_for',
     'wait_for_and_refresh', 'write_textfield'
 ]
 
@@ -1884,3 +1884,10 @@ def poll_for_element(locator, wait=10, frequency=1):
                .until(EC.visibility_of_element_located(locator)))
     except TimeoutException:
         _raise("Element not found with locator {}.".format(locator))
+
+def set_page_load_timeout(timeout):
+    """Sets the maximum amount of time to wait for a page load to complete.
+    :argument timeout: The amount of time to wait in seconds.
+    """
+    _test.browser.set_page_load_timeout(timeout)
+    logger.debug('Set page load timeout to {} seconds.'.format(timeout))
