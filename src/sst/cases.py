@@ -162,7 +162,7 @@ class SSTScriptTestCase(SSTTestCase):
         self.script_path = os.path.join(self.script_dir, self.script_name)
 
         # pythonify the script path into a python path
-        test_id = self.script_path.replace('.py', '')
+        test_id = self.script_path
         if test_id.startswith('./'):
             test_id = test_id[2:]
         self.id = lambda: '%s' % (test_id.replace(os.sep, '.'))
