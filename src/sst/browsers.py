@@ -158,7 +158,7 @@ class FirefoxBinary(firefox_binary.FirefoxBinary):
         firefox).
         """
         connectable = False
-        max_tries = 6
+        max_tries = 10
         sleep_for = 1
         for count in range(1, max_tries):
             connectable = utils.is_connectable(self.profile.port)
@@ -170,14 +170,15 @@ class FirefoxBinary(firefox_binary.FirefoxBinary):
                 # Browser has exited
                 raise selenium_exceptions.WebDriverException(
                     "The browser appears to have exited "
-                    "before we could connect. The output was: %s" %
-                    self._get_firefox_output())
+                    "before we could connect. If you specified a log_file in "
+                    "the FirefoxBinary constructor, check it for details.")
             time.sleep(sleep_for)
         if not connectable:
             self.kill()
             raise selenium_exceptions.WebDriverException(
-                'Cannot connect to the selenium extension, Firefox output: %s'
-                % (self._get_firefox_output(),))
+                "Cannot connect to the selenium extension. If you specified a "
+                "log_file in the FirefoxBinary constructor, check it for "
+                "details.")
         return connectable
 
 
