@@ -170,12 +170,15 @@ class FirefoxBinary(firefox_binary.FirefoxBinary):
                 # Browser has exited
                 raise selenium_exceptions.WebDriverException(
                     "The browser appears to have exited "
-                    "before we could connect.")
+                    "before we could connect. If you specified a log_file in "
+                    "the FirefoxBinary constructor, check it for details.")
             time.sleep(sleep_for)
         if not connectable:
             self.kill()
             raise selenium_exceptions.WebDriverException(
-                'Cannot connect to the selenium extension.')
+                "Cannot connect to the selenium extension. If you specified a "
+                "log_file in the FirefoxBinary constructor, check it for "
+                "details.")
         return connectable
 
 
