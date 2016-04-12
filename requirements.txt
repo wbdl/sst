@@ -1,4 +1,4 @@
 junitxml
 python-subunit
-selenium==2.47.1
+selenium==2.53.0
 testtools==1.8.0
