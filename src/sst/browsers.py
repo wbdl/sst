@@ -147,7 +147,7 @@ class FirefoxBinary(firefox_binary.FirefoxBinary):
             command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
             env=self._firefox_env)
 
-    def _wait_until_connectable(self):
+    def _wait_until_connectable(self, **kwargs):
         """Blocks until the extension is connectable in the firefox.
 
         The base class implements this by checking utils.is_connectable() every
