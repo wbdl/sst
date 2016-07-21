@@ -21,8 +21,10 @@ from __future__ import print_function
 
 import ast
 import logging
+import json
 import os
 import pdb
+import re
 import testtools
 import testtools.content
 import traceback
@@ -34,6 +36,7 @@ from sst import (
     config,
     context,
     xvfbdisplay,
+    testrail_helper
 )
 
 
@@ -58,6 +61,8 @@ class SSTTestCase(testtools.TestCase):
     screenshots_on = False
     debug_post_mortem = False
     extended_report = False
+
+    testrail_case_id = None
 
     def setUp(self):
         super(SSTTestCase, self).setUp()
@@ -150,6 +155,34 @@ class SSTTestCase(testtools.TestCase):
                        testtools.content.text_content(current_url))
         self.addDetail('Page source',
                        testtools.content.text_content(page_source))
+
+    def tearDown(self):
+        super(SSTTestCase, self).tearDown()
+        if 'testrail' in config.flags:
+            self._store_case_results()
+
+    def _store_case_results(self):
+        self.testrail_case_id = self._extract_testrail_case_id()
+        failed = self.getDetails()
+        if self.testrail_case_id:
+            status_id = 5 if failed else 1
+            comment = json.dumps(str(failed)) if failed else None
+            case_result = {}
+            case_result["case_id"] = self.testrail_case_id
+            case_result["status_id"] = status_id
+            case_result["comment"] = comment
+            testrail_helper.run_results.append(case_result)
+
+    def _extract_testrail_case_id(self):
+        self.script_path = os.path.join(self.script_dir, self.script_name)
+        with open(self.script_path) as f:
+            source = f.read()
+        match = re.search("\n(princess|test)_id\s*=\s*\'?[C]?(\d+)", source)
+        if match:
+            case_id = int(match.group(2))
+        else:
+            logger.debug("Could not find test_id in test script")
+        return case_id or None
 
 
 class SSTScriptTestCase(SSTTestCase):

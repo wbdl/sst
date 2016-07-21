@@ -24,6 +24,7 @@ import sys
 
 import testtools
 
+from testrail import APIError
 from sst import (
     browsers,
     cases,
@@ -32,6 +33,7 @@ from sst import (
     filters,
     loaders,
     results,
+    testrail_helper
 )
 
 # Maintaining compatibility until we deprecate the followings
@@ -117,8 +119,17 @@ def runtests(test_regexps, results_directory, out,
         out.write('Test run interrupted\n')
     result.stopTestRun()
 
+    if 'testrail' in config.flags:
+        send_results_to_testrail()
+
     return len(result.failures) + len(result.errors)
 
+def send_results_to_testrail():
+    logger.debug("Sending test run results to TestRail")
+    try:
+        testrail_helper.send_results()
+    except APIError, e:
+        logger.debug("Could not send TestRail results \n" + str(e))
 
 def find_shared_directory(test_dir, shared_directory):
     """This function is responsible for finding the shared directory.
