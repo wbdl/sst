@@ -107,14 +107,13 @@ class SSTTestCase(testtools.TestCase):
         self.proxy_server.start()
         self.proxy = self.proxy_server.create_proxy()
 
-        domains = ['optimizely.com', 'micpn.com', 'switchads.com',
-                   'mathtag.com', 'adnxs.com', 'bidswitch.net', 'clicktale.net',
-                   'casalemedia.com', 'pubmatic.com', 'switchadhub.com',
-                   'contextweb.com', 'adsrvr.org', 'dpclk.com',
-                   'rubiconproject.com', 'doubleclick.net', 'rfihub.com',
-                   'quantserve.com', 'advertising.com', 'tidaltv.com',
-                   'moatads.com', 'adform.net', 'turn.com', 'chango.com',
-                   'nr-data.net']
+        domains = ['micpn.com', 'switchads.com', 'mathtag.com', 'adnxs.com',
+                   'bidswitch.net', 'clicktale.net', 'casalemedia.com',
+                   'pubmatic.com', 'switchadhub.com', 'contextweb.com',
+                   'adsrvr.org', 'dpclk.com', 'rubiconproject.com',
+                   'doubleclick.net', 'rfihub.com', 'quantserve.com',
+                   'advertising.com', 'tidaltv.com', 'moatads.com',
+                   'adform.net', 'turn.com', 'chango.com', 'nr-data.net']
 
         for domain in domains:
             self.proxy.blacklist("^https?://([a-z0-9-]+[.])*{}*.*".format(domain), 404)
