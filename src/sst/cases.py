@@ -57,12 +57,11 @@ class SSTTestCase(testtools.TestCase):
     wait_poll = 0.1
     base_url = None
 
+    case_id = None
     results_directory = None
     screenshots_on = False
     debug_post_mortem = False
     extended_report = False
-
-    testrail_case_id = None
 
     def setUp(self):
         super(SSTTestCase, self).setUp()
@@ -80,6 +79,9 @@ class SSTTestCase(testtools.TestCase):
         self.browser = None
         self.start_browser()
         self.addCleanup(self.stop_browser)
+        # TODO: check command line opts for whether we should send results to
+        # an external source or not
+        self.addCleanup(self.post_to_api)
         if self.screenshots_on:
             self.addOnException(self.take_screenshot_and_page_dump)
         if self.debug_post_mortem:
@@ -156,34 +158,21 @@ class SSTTestCase(testtools.TestCase):
         self.addDetail('Page source',
                        testtools.content.text_content(page_source))
 
-    def tearDown(self):
-        super(SSTTestCase, self).tearDown()
+    def post_to_api(self):
+        # TODO: move this check out of this method and use command line opts
         if 'testrail' in config.flags:
             self._store_case_results()
 
     def _store_case_results(self):
-        self.testrail_case_id = self._extract_testrail_case_id()
         failed = self.getDetails()
-        if self.testrail_case_id:
+        if self.case_id:
             status_id = 5 if failed else 1
             comment = json.dumps(str(failed)) if failed else None
             case_result = {}
-            case_result["case_id"] = self.testrail_case_id
+            case_result["case_id"] = self.case_id
             case_result["status_id"] = status_id
             case_result["comment"] = comment
             testrail_helper.run_results.append(case_result)
-
-    def _extract_testrail_case_id(self):
-        self.script_path = os.path.join(self.script_dir, self.script_name)
-        with open(self.script_path) as f:
-            source = f.read()
-        match = re.search("\n(princess|test)_id\s*=\s*\'?[C]?(\d+)", source)
-        if match:
-            case_id = int(match.group(2))
-        else:
-            logger.debug("Could not find test_id in test script")
-        return case_id or None
-
 
 class SSTScriptTestCase(SSTTestCase):
     """Test case used internally by sst-run and sst-remote."""
@@ -202,6 +191,14 @@ class SSTScriptTestCase(SSTTestCase):
         if context_row is None:
             context_row = {}
         self.context = context_row
+
+        # get id from script name for use when posting
+        # results to an external test case management tool
+        try:
+            self.case_id = int(filter(lambda x:x.isdigit(), self.script_name))
+        except ValueError:
+            # if script name doesn't contain a number skip it
+            pass
 
     def __str__(self):
         # Since we use run_test_script to encapsulate the call to the
