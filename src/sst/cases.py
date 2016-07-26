@@ -30,6 +30,7 @@ import testtools.content
 import traceback
 
 from selenium.common import exceptions
+from testrail import APIError
 from sst import (
     actions,
     browsers,
@@ -79,9 +80,10 @@ class SSTTestCase(testtools.TestCase):
         self.browser = None
         self.start_browser()
         self.addCleanup(self.stop_browser)
-        # TODO: check command line opts for whether we should send results to
-        # an external source or not
-        self.addCleanup(self.post_to_api)
+        if config.api_test_results == 'per_case':
+            self.addCleanup(self.post_api_test_result)
+        if config.api_test_results == 'per_suite':
+            self.addCleanup(self._store_case_result)
         if self.screenshots_on:
             self.addOnException(self.take_screenshot_and_page_dump)
         if self.debug_post_mortem:
@@ -158,21 +160,33 @@ class SSTTestCase(testtools.TestCase):
         self.addDetail('Page source',
                        testtools.content.text_content(page_source))
 
-    def post_to_api(self):
-        # TODO: move this check out of this method and use command line opts
-        if 'testrail' in config.flags:
-            self._store_case_results()
+    def post_api_test_result(self):
+        logger.debug("Sending test case result")
+        try:
+            result = self._get_case_result()
+            if result:
+                testrail_helper.send_result(result['case_id'],
+                                            result['status_id'],
+                                            result['comment'])
+        except APIError, e:
+            logger.debug("Could not send test case result \n" + str(e))
 
-    def _store_case_results(self):
+    def _store_case_result(self):
+        if self._get_case_result():
+            testrail_helper.run_results.append(self._get_case_result())
+
+    def _get_case_result(self):
         failed = self.getDetails()
         if self.case_id:
-            status_id = 5 if failed else 1
+            status_id = testrail_helper.APITestStatus.RETEST if failed \
+                   else testrail_helper.APITestStatus.PASSED
             comment = json.dumps(str(failed)) if failed else None
-            case_result = {}
-            case_result["case_id"] = self.case_id
-            case_result["status_id"] = status_id
-            case_result["comment"] = comment
-            testrail_helper.run_results.append(case_result)
+            return { 'case_id': self.case_id,
+                     'status_id': status_id,
+                     'comment': comment }
+        logger.debug("Could not find case_id for {}".format(self.id()))
+        return None
+
 
 class SSTScriptTestCase(SSTTestCase):
     """Test case used internally by sst-run and sst-remote."""

@@ -67,7 +67,8 @@ def runtests(test_regexps, results_directory, out,
              debug=False,
              extended=False,
              includes=None,
-             excludes=None):
+             excludes=None,
+             api_test_results=None):
     if not os.path.isdir(test_dir):
         raise RuntimeError('Specified directory %r does not exist'
                            % (test_dir,))
@@ -86,7 +87,7 @@ def runtests(test_regexps, results_directory, out,
     alltests = filters.include_regexps(test_regexps, alltests)
     alltests = filters.exclude_regexps(excludes, alltests)
     case_ids = [test.case_id for test in alltests._tests if test.case_id]
-    # logger.debug('Cases in current run: {}'.format(case_ids))
+    logger.debug('Cases in current run: {}'.format(case_ids))
 
     if not alltests.countTestCases():
         # FIXME: Really needed ? Can't we just rely on the number of tests run
@@ -121,17 +122,17 @@ def runtests(test_regexps, results_directory, out,
         out.write('Test run interrupted\n')
     result.stopTestRun()
 
-    if 'testrail' in config.flags:
-        send_results_to_testrail()
+    if config.api_test_results == 'per_suite':
+        post_api_test_results()
 
     return len(result.failures) + len(result.errors)
 
-def send_results_to_testrail():
-    logger.debug("Sending test run results to TestRail")
+def post_api_test_results():
+    logger.debug("Sending test run results")
     try:
         testrail_helper.send_results()
     except APIError, e:
-        logger.debug("Could not send TestRail results \n" + str(e))
+        logger.debug("Could not send test results \n" + str(e))
 
 def find_shared_directory(test_dir, shared_directory):
     """This function is responsible for finding the shared directory.
