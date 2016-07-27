@@ -1,5 +1,6 @@
 import json
 import logging
+from datetime import datetime
 from testrail import *
 
 logger = logging.getLogger('SST')
@@ -10,9 +11,23 @@ client.user = ''
 client.password = ''
 
 run_results = []
+run_id = None
+
+def create_test_run(case_ids, project_id=21):
+    time = datetime.now().time().strftime("%I:%M %p")
+    try:
+        run = client.send_post('add_run/{}'.format(project_id),
+            {
+                "name": "Automation Test Run {}".format(time),
+                "case_ids": case_ids
+            }
+        )
+        return run['id']
+    except Exception as e:
+        logger.debug("Could not create TestRail test run \n" + str(e))
 
 # add test case results to test run
-def send_results(run_id=88):
+def send_results():
     try:
         run = client.send_post('add_results_for_cases/{}'.format(run_id),
     		{ "results": run_results }
@@ -21,7 +36,7 @@ def send_results(run_id=88):
         logger.debug("Could not send TestRail results \n" + str(e))
 
 # add individual test case result to test run
-def send_result(case_id, status_id, comment=None, run_id=88):
+def send_result(case_id, status_id, comment=None):
     try:
         run = client.send_post('add_result_for_case/{}/{}'.format(run_id, case_id),
             {
