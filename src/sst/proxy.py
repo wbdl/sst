@@ -48,6 +48,8 @@ class Proxy(object):
                 json.dump(self.proxy.har, harfile)
             data = json.dumps(self.proxy.har, ensure_ascii=False)
             self.proxy_server.stop()
+            self.proxy = None
+            self.proxy_server = None
             logger.debug('Browsermob proxy stopped. HAR created: {}'
                          .format(filename))
 

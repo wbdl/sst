@@ -103,6 +103,8 @@ class SSTTestCase(testtools.TestCase):
 
     def stop_proxy(self):
         self.proxy.stop_proxy()
+        self.proxy = None
+        self.proxy_address = None
 
     def _start_browser(self):
         self.browser_factory.setup_for_test(self)
