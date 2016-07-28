@@ -29,19 +29,15 @@ import testtools
 import testtools.content
 import traceback
 
-from browsermobproxy import Server
 from selenium.common import exceptions
 from sst import (
     actions,
     browsers,
     config,
     context,
-    xvfbdisplay,
+    proxy,
+    xvfbdisplay
 )
-
-dirname = os.path.dirname
-BMP_PATH = 'browsermob-proxy-2.1.1/bin/browsermob-proxy'
-BMP_BIN = os.path.join(dirname(__file__), BMP_PATH)
 
 logger = logging.getLogger('SST')
 
@@ -51,8 +47,6 @@ class SSTTestCase(testtools.TestCase):
 
     xvfb = None
     xserver_headless = False
-    proxy = None
-    proxy_server = None
 
     browser_factory = browsers.FirefoxFactory()
 
@@ -66,6 +60,9 @@ class SSTTestCase(testtools.TestCase):
     screenshots_on = False
     debug_post_mortem = False
     extended_report = False
+    use_proxy = False
+    proxy = None
+    proxy_address = None
 
     def setUp(self):
         super(SSTTestCase, self).setUp()
@@ -81,10 +78,11 @@ class SSTTestCase(testtools.TestCase):
             self.xvfb = xvfbdisplay.use_xvfb_server(self)
         config.results_directory = self.results_directory
         self.browser = None
-        self.start_proxy()
+        if self.use_proxy:
+            self.start_proxy_for_test(self.id())
+            self.addCleanup(self.stop_proxy)
         self.start_browser()
         self.addCleanup(self.stop_browser)
-        self.addCleanup(self.stop_proxy)
         if self.screenshots_on:
             self.addOnException(self.take_screenshot_and_page_dump)
         if self.debug_post_mortem:
@@ -101,37 +99,12 @@ class SSTTestCase(testtools.TestCase):
         # behavior so runners and results don't get mad.
         return None
 
-    def start_proxy(self):
-        logger.debug('Starting browsermob proxy...')
-        self.proxy_server = Server(BMP_BIN)
-        self.proxy_server.start()
-        self.proxy = self.proxy_server.create_proxy()
-
-        domains = ['micpn.com', 'switchads.com', 'mathtag.com', 'adnxs.com',
-                   'bidswitch.net', 'clicktale.net', 'casalemedia.com',
-                   'pubmatic.com', 'switchadhub.com', 'contextweb.com',
-                   'adsrvr.org', 'dpclk.com', 'rubiconproject.com',
-                   'doubleclick.net', 'rfihub.com', 'quantserve.com',
-                   'advertising.com', 'tidaltv.com', 'moatads.com',
-                   'adform.net', 'turn.com', 'chango.com', 'nr-data.net']
-
-        for domain in domains:
-            self.proxy.blacklist("^https?://([a-z0-9-]+[.])*{}*.*".format(domain), 404)
-
-        blacklisted = requests.get('http://localhost:8080/proxy/{}/blacklist'.format(self.proxy.port))
-        logger.debug('Blacklisted: \n{}'.format(blacklisted.text))
-        self.proxy.new_har(self.id())
-        logger.debug('Proxy started.')
+    def start_proxy_for_test(self, test_id):
+        self.proxy = proxy.Proxy(test_id)
+        self.proxy_address = self.proxy.proxy.proxy
 
     def stop_proxy(self):
-        with open('{}.har'.format(self.id()), 'w') as harfile:
-            json.dump(self.proxy.har, harfile)
-        data = json.dumps(self.proxy.har, ensure_ascii=False)
-        logger.debug('Dumping HAR')
-        logger.debug(data)
-        logger.debug('Stopping browsermob proxy...')
-        self.proxy_server.stop()
-        logger.debug('Proxy stopped.')
+        self.proxy.stop_proxy()
 
     def _start_browser(self):
         self.browser_factory.setup_for_test(self)
