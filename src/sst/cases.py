@@ -24,7 +24,6 @@ import logging
 import json
 import os
 import pdb
-import re
 import testtools
 import testtools.content
 import traceback
