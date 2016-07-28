@@ -86,7 +86,8 @@ class ChromeFactory(BrowserFactory):
     def setup_for_test(self, test):
         chrome_options = Options()
         chrome_options.add_argument("test-type")
-        chrome_options.add_argument("--proxy-server={0}".format(test.proxy.proxy))
+        if test.use_proxy:
+            chrome_options.add_argument("--proxy-server={0}".format(test.proxy_address))
         self.capabilities = chrome_options.to_capabilities()
         logger.debug("Chrome capabilities: {}".format(self.capabilities))
 
