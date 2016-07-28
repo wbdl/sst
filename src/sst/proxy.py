@@ -20,6 +20,7 @@ import requests
 
 from browsermobproxy import Server
 
+# TODO: move into separate proxy config
 dirname = os.path.dirname
 BMP_PATH = 'browsermob-proxy-2.1.1/bin/browsermob-proxy'
 BMP_BIN = os.path.join(dirname(__file__), BMP_PATH)
@@ -34,6 +35,7 @@ class Proxy(object):
         proxy_server = None
         test_id = None
 
+        # TODO: move into separate proxy config
         blacklist = ['micpn.com', 'switchads.com', 'mathtag.com', 'adnxs.com',
                    'bidswitch.net', 'clicktale.net', 'casalemedia.com',
                    'pubmatic.com', 'switchadhub.com', 'contextweb.com',
