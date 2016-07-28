@@ -2,4 +2,4 @@ junitxml
 python-subunit
 selenium==2.53.0
 testtools==1.8.0
-browsermob-proxy=0.7.1
+browsermob-proxy==0.7.1
