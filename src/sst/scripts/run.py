@@ -68,7 +68,8 @@ def main():
             failfast=cmd_opts.failfast,
             debug=cmd_opts.debug,
             extended=cmd_opts.extended_tracebacks,
-            excludes=cmd_opts.excludes
+            excludes=cmd_opts.excludes,
+            use_proxy=cmd_opts.use_proxy
         )
 
     return failures
