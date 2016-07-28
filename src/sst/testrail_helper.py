@@ -20,6 +20,7 @@ def create_test_run(case_ids):
         run = client.send_post('add_run/{}'.format(project_id),
             {
                 "name": "Automation Test Run {}".format(time),
+                "include_all": False,
                 "case_ids": case_ids
             }
         )
