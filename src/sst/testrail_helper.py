@@ -11,9 +11,10 @@ client.user = ''
 client.password = ''
 
 run_results = []
+project_id = None
 run_id = None
 
-def create_test_run(case_ids, project_id=21):
+def create_test_run(case_ids):
     time = datetime.now().time().strftime("%I:%M %p")
     try:
         run = client.send_post('add_run/{}'.format(project_id),

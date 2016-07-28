@@ -106,9 +106,9 @@ def get_common_options():
     parser.add_option('-o', dest='results_directory',
                       default=None,
                       help='directory to output results to')
-    parser.add_option('-t', dest='api_test_results', default=None,
+    parser.add_option('-t', dest='api_test_results', default=None, nargs=2,
                       help=('select when to send API test results '
-                      '(per_case, per_suite)'))
+                      '(per_case, per_suite), and the API project ID'))
     return parser
 
 
