@@ -48,12 +48,15 @@ class Proxy(object):
                 json.dump(self.proxy.har, harfile)
             data = json.dumps(self.proxy.har, ensure_ascii=False)
             self.proxy_server.stop()
-            logger.debug('Browsermob proxy stopped. HAR created: {}'.format(filename))
+            logger.debug('Browsermob proxy stopped. HAR created: {}'
+                         .format(filename))
 
         def set_blacklist(self, domain_list):
             for domain in domain_list:
-                self.proxy.blacklist("^https?://([a-z0-9-]+[.])*{}*.*".format(domain), 404)
+                self.proxy.blacklist("^https?://([a-z0-9-]+[.])*{}*.*"
+                                     .format(domain), 404)
             logger.debug("Proxy blacklist set.")
 
         def get_blacklist(self):
-            return requests.get('{}{}/blacklist'.format(config.proxy_api, self.proxy.port))
+            return requests.get('{}{}/blacklist'
+                                .format(config.proxy_api, self.proxy.port))
