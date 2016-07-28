@@ -13,46 +13,31 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import os
 import json
 import logging
 import requests
 
+from sst import config
 from browsermobproxy import Server
-
-# TODO: move into separate proxy config
-dirname = os.path.dirname
-BMP_PATH = 'browsermob-proxy-2.1.1/bin/browsermob-proxy'
-BMP_BIN = os.path.join(dirname(__file__), BMP_PATH)
 
 logger = logging.getLogger('SST')
 
 class Proxy(object):
 
-        API = 'http://localhost:8080/proxy/'
-
         proxy = None
         proxy_server = None
         test_id = None
-
-        # TODO: move into separate proxy config
-        blacklist = ['micpn.com', 'switchads.com', 'mathtag.com', 'adnxs.com',
-                   'bidswitch.net', 'clicktale.net', 'casalemedia.com',
-                   'pubmatic.com', 'switchadhub.com', 'contextweb.com',
-                   'adsrvr.org', 'dpclk.com', 'rubiconproject.com',
-                   'doubleclick.net', 'rfihub.com', 'quantserve.com',
-                   'advertising.com', 'tidaltv.com', 'moatads.com',
-                   'adform.net', 'turn.com', 'chango.com', 'nr-data.net']
 
         def __init__(self, test_id):
             self.test_id = test_id
             self.start_proxy()
 
         def start_proxy(self):
-            self.proxy_server = Server(BMP_BIN)
+            self.proxy_server = Server(config.proxy_bin)
             self.proxy_server.start()
             self.proxy = self.proxy_server.create_proxy()
-            self.set_blacklist()
+            if config.blacklist:
+                self.set_blacklist(config.blacklist)
             self.proxy.new_har(self.test_id)
             logger.debug('Browsermob proxy started.')
             return self
@@ -62,15 +47,13 @@ class Proxy(object):
             with open(filename, 'w') as harfile:
                 json.dump(self.proxy.har, harfile)
             data = json.dumps(self.proxy.har, ensure_ascii=False)
-            # logger.debug('Dumping HAR')
-            # logger.debug(data)
             self.proxy_server.stop()
             logger.debug('Browsermob proxy stopped. HAR created: {}'.format(filename))
 
-        def set_blacklist(self):
-            for domain in self.blacklist:
+        def set_blacklist(self, domain_list):
+            for domain in domain_list:
                 self.proxy.blacklist("^https?://([a-z0-9-]+[.])*{}*.*".format(domain), 404)
-
             logger.debug("Proxy blacklist set.")
-            # blacklisted = requests.get('{}{}/blacklist'.format(self.API, self.proxy.port))
-            # logger.debug('Blacklisted: \n{}'.format(blacklisted.text))
+
+        def get_blacklist(self):
+            return requests.get('{}{}/blacklist'.format(config.proxy_api, self.proxy.port))
