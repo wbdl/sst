@@ -106,6 +106,10 @@ def get_common_options():
     parser.add_option('-o', dest='results_directory',
                       default=None,
                       help='directory to output results to')
+    parser.add_option('-p', dest='use_proxy',
+                       action='store_true', default=False,
+                       help='enables BrowserMob proxy and stores HTTP archive'
+                       ' files for each test. refer src/sst/proxy.py')
     return parser
 
 
