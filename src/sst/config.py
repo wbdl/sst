@@ -58,7 +58,7 @@ cache = {}
 
 # Browsermob proxy settings
 dirname = os.path.dirname
-bmp_path= 'browsermob-proxy-2.1.1/bin/browsermob-proxy'
+bmp_path= 'browsermob-proxy-2.1.2/bin/browsermob-proxy'
 proxy_bin = os.path.join(dirname(__file__), bmp_path)
 proxy_api = 'http://localhost:8080/proxy/'
 blacklist = ['micpn.com', 'switchads.com', 'mathtag.com', 'adnxs.com',
