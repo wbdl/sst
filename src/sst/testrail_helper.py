@@ -11,7 +11,7 @@ client.user = ''
 client.password = ''
 
 run_results = []
-project_id = None
+project_id = 3
 run_id = None
 
 def create_test_run(case_ids):

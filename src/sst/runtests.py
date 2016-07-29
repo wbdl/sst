@@ -90,7 +90,6 @@ def runtests(test_regexps, results_directory, out,
     case_ids = [test.case_id for test in alltests._tests if test.case_id]
     logger.debug('Cases in current run: {}'.format(case_ids))
 
-    testrail_helper.project_id = get_project_id()
     testrail_helper.run_id = testrail_helper.create_test_run(case_ids)
     logger.debug('Created test run with ID {} using the above cases'
                  .format(testrail_helper.run_id))
@@ -128,7 +127,7 @@ def runtests(test_regexps, results_directory, out,
         out.write('Test run interrupted\n')
     result.stopTestRun()
 
-    if 'per_suite' in config.api_test_results:
+    if config.api_test_results == 'per_suite':
         post_api_test_results()
 
     return len(result.failures) + len(result.errors)
@@ -139,12 +138,6 @@ def post_api_test_results():
         testrail_helper.send_results()
     except APIError, e:
         logger.debug("Could not send test results \n" + str(e))
-
-def get_project_id():
-    for i in config.api_test_results:
-        if i.isdigit():
-            return i
-    return None
 
 def find_shared_directory(test_dir, shared_directory):
     """This function is responsible for finding the shared directory.

@@ -86,9 +86,9 @@ class SSTTestCase(testtools.TestCase):
             self.addCleanup(self.stop_proxy)
         self.start_browser()
         self.addCleanup(self.stop_browser)
-        if 'per_case' in config.api_test_results:
+        if config.api_test_results == 'per_case':
             self.addCleanup(self.post_api_test_result)
-        if 'per_suite' in config.api_test_results:
+        if config.api_test_results == 'per_suite':
             self.addCleanup(self._store_case_result)
         if self.screenshots_on:
             self.addOnException(self.take_screenshot_and_page_dump)
