@@ -90,9 +90,10 @@ def runtests(test_regexps, results_directory, out,
     case_ids = [test.case_id for test in alltests._tests if test.case_id]
     logger.debug('Cases in current run: {}'.format(case_ids))
 
-    logger.debug('Creating test run with above cases')
     testrail_helper.project_id = get_project_id()
     testrail_helper.run_id = testrail_helper.create_test_run(case_ids)
+    logger.debug('Created test run with ID {} using the above cases'
+                 .format(testrail_helper.run_id))
 
     if not alltests.countTestCases():
         # FIXME: Really needed ? Can't we just rely on the number of tests run
