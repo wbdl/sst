@@ -68,7 +68,8 @@ def runtests(test_regexps, results_directory, out,
              extended=False,
              includes=None,
              excludes=None,
-             api_test_results=None):
+             api_test_results=None,
+             use_proxy=False):
     if not os.path.isdir(test_dir):
         raise RuntimeError('Specified directory %r does not exist'
                            % (test_dir,))
@@ -81,7 +82,7 @@ def runtests(test_regexps, results_directory, out,
 
     loader = loaders.SSTestLoader(results_directory,
                                   browser_factory, screenshots_on,
-                                  debug, extended)
+                                  debug, extended, use_proxy)
     alltests = loader.suiteClass()
     alltests.addTests(loader.discoverTestsFromTree(test_dir))
     alltests = filters.include_regexps(test_regexps, alltests)

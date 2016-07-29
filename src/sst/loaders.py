@@ -188,13 +188,14 @@ class SSTestLoader(TestLoader):
 
     def __init__(self, results_directory=None, browser_factory=None,
                  screenshots_on=False, debug_post_mortem=False,
-                 extended_report=False):
+                 extended_report=False, use_proxy=False):
         super(SSTestLoader, self).__init__()
         self.results_directory = results_directory
         self.browser_factory = browser_factory
         self.screenshots_on = screenshots_on
         self.debug_post_mortem = debug_post_mortem
         self.extended_report = extended_report
+        self.use_proxy = use_proxy
 
     def discoverTestsFromFile(self, path):
         return self.loadTestsFromScript(path)
@@ -224,10 +225,10 @@ class SSTestLoader(TestLoader):
         # smells wrong here. -- vila 2013-04-26
         test.results_directory = self.results_directory
         test.browser_factory = self.browser_factory
-
         test.screenshots_on = self.screenshots_on
         test.debug_post_mortem = self.debug_post_mortem
         test.extended_report = self.extended_report
+        test.use_proxy = self.use_proxy
 
         return test
 
