@@ -33,9 +33,9 @@ from sst import (
     browsers,
     config,
     context,
-    xvfbdisplay,
+    proxy,
+    xvfbdisplay
 )
-
 
 logger = logging.getLogger('SST')
 
@@ -58,6 +58,9 @@ class SSTTestCase(testtools.TestCase):
     screenshots_on = False
     debug_post_mortem = False
     extended_report = False
+    use_proxy = False
+    proxy = None
+    proxy_address = None
 
     def setUp(self):
         super(SSTTestCase, self).setUp()
@@ -73,6 +76,9 @@ class SSTTestCase(testtools.TestCase):
             self.xvfb = xvfbdisplay.use_xvfb_server(self)
         config.results_directory = self.results_directory
         self.browser = None
+        if self.use_proxy:
+            self.start_proxy_for_test(self.id())
+            self.addCleanup(self.stop_proxy)
         self.start_browser()
         self.addCleanup(self.stop_browser)
         if self.screenshots_on:
@@ -90,6 +96,15 @@ class SSTTestCase(testtools.TestCase):
         # nice to display when the test fails...), we revert to the default
         # behavior so runners and results don't get mad.
         return None
+
+    def start_proxy_for_test(self, test_id):
+        self.proxy = proxy.Proxy(test_id)
+        self.proxy_address = self.proxy.proxy.proxy
+
+    def stop_proxy(self):
+        self.proxy.stop_proxy()
+        self.proxy = None
+        self.proxy_address = None
 
     def _start_browser(self):
         self.browser_factory.setup_for_test(self)

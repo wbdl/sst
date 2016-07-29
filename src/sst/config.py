@@ -36,7 +36,17 @@ The `sst.config` module has the following information::
 
     # A per test cache. A dictionary that is cleared at the start of each test.
     config.cache
+
+    # path to the browsermob proxy binary
+    config.proxy_bin
+
+    # proxy API address
+    config.proxy_api
+
+    # domains to add to the browsermob proxy blacklist
+    config.blacklist
 """
+import os
 
 browser_type = 'firefox'
 _current_context = None
@@ -45,3 +55,16 @@ results_directory = None
 flags = []
 __args__ = {}
 cache = {}
+
+# Browsermob proxy settings
+dirname = os.path.dirname
+bmp_path= 'browsermob-proxy-2.1.2/bin/browsermob-proxy'
+proxy_bin = os.path.join(dirname(__file__), bmp_path)
+proxy_api = 'http://localhost:8080/proxy/'
+blacklist = ['micpn.com', 'switchads.com', 'mathtag.com', 'adnxs.com',
+           'bidswitch.net', 'clicktale.net', 'casalemedia.com',
+           'pubmatic.com', 'switchadhub.com', 'contextweb.com',
+           'adsrvr.org', 'dpclk.com', 'rubiconproject.com',
+           'doubleclick.net', 'rfihub.com', 'quantserve.com',
+           'advertising.com', 'tidaltv.com', 'moatads.com',
+           'adform.net', 'turn.com', 'chango.com', 'nr-data.net']
