@@ -29,7 +29,7 @@ import testtools.content
 import traceback
 
 from selenium.common import exceptions
-from testrail import APIError
+from testrail_api.testrail import APIError
 from sst import (
     actions,
     browsers,

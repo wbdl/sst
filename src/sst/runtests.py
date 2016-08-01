@@ -24,7 +24,7 @@ import sys
 
 import testtools
 
-from testrail import APIError
+from testrail_api.testrail import APIError
 from sst import (
     browsers,
     cases,

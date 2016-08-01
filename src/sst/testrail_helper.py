@@ -1,7 +1,7 @@
 import json
 import logging
 from datetime import datetime
-from testrail import *
+from testrail_api.testrail import *
 
 logger = logging.getLogger('SST')
 
