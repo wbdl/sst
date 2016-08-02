@@ -41,8 +41,9 @@ SST consists of:
  * selectable browsers
  * headless (xvfb) mode
  * screenshots on errors
+ * optionally run tests behind proxy
 
-Test output is displayed to the console and optionally saved as 
+Test output is displayed to the console and optionally saved as
 JUnit-compatible XML for compatibility with CI systems.
 
 
@@ -142,6 +143,8 @@ Options::
     -x                        run browser in headless xserver (Xvfb)
     -c CONCURRENCY            concurrency (number of procs)
     --concurrency=CONCURRENCY concurrency (number of procs)
+    -o RESULTS_DIRECTORY      directory where ressults should be stored
+    -p                        run tests with Browsermob Proxy enabled
 
 
 --------------------
@@ -248,7 +251,7 @@ The following commands will therefore run various selections of tests:
 
 * The whole test suite::
 
-    sst-run 
+    sst-run
 
   when invoked at the root of the test tree.
 
@@ -363,7 +366,7 @@ information::
     $ ./ci.sh --bootstrap
     $ source ENV/bin/activate
     (ENV)$ ./sst-run -d examples
-    
+
 * (optional) Install test dependencies and run SST's internal unit tests::
 
     (ENV)$ pip install mock nose pep8
