@@ -5,3 +5,4 @@ recursive-include docs *.rst *.py *.png *.css favicon.ico README
 recursive-include src/testproject *.py *.html *.js *.css
 recursive-include src/sst/selftests *.py *.csv
 recursive-include src/sst/tests *.py
+recursive-include src/sst/browsermob-proxy-2.1.2 *
