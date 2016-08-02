@@ -26,7 +26,7 @@ SST (selenium-simple-test) is a web test framework that uses Python
 to generate functional browser-based tests.
 
 Tests are made up of scripts or test case classes, created by composing
-actions that drive a browser and assert conditions. You have the flexibilty
+actions that drive a browser and assert conditions. You have the flexibility
 of the full Python language, along with a convenient set of functions to
 simplify web testing.
 
@@ -42,6 +42,7 @@ SST consists of:
  * headless (xvfb) mode
  * screenshots on errors
  * optionally run tests behind proxy
+ * send results to external test case management tool
 
 Test output is displayed to the console and optionally saved as
 JUnit-compatible XML for compatibility with CI systems.
@@ -143,8 +144,9 @@ Options::
     -x                        run browser in headless xserver (Xvfb)
     -c CONCURRENCY            concurrency (number of procs)
     --concurrency=CONCURRENCY concurrency (number of procs)
-    -o RESULTS_DIRECTORY      directory where ressults should be stored
+    -o RESULTS_DIRECTORY      directory where results should be stored
     -p                        run tests with Browsermob Proxy enabled
+    -t                        post test results to API (per_case, per_suite)
 
 
 --------------------
