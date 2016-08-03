@@ -14,6 +14,8 @@ run_results = []
 project_id = 3
 run_id = None
 
+FAILED_TEST_RESULT_STATUS = APITestStatus.FAILED
+
 def create_test_run(case_ids):
     time = datetime.now().time().strftime("%I:%M %p")
     try:

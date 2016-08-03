@@ -193,7 +193,7 @@ class SSTTestCase(testtools.TestCase):
     def _get_case_result(self):
         if self.case_id:
             failed = self.getDetails()
-            status_id = testrail_helper.APITestStatus.RETEST if failed \
+            status_id = testrail_helper.FAILED_TEST_RESULT_STATUS if failed \
                    else testrail_helper.APITestStatus.PASSED
             comment = json.dumps(str(failed)) if failed else None
             return { 'case_id': self.case_id,
