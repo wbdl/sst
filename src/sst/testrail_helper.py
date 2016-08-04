@@ -14,8 +14,6 @@ run_results = []
 project_id = 3
 run_id = None
 
-FAILED_TEST_RESULT_STATUS = APITestStatus.FAILED
-
 def create_test_run(case_ids):
     time = datetime.now().time().strftime("%I:%M %p")
     try:
@@ -62,3 +60,6 @@ def store_json_results(result, case_id=''):
 class APITestStatus(object):
 
     PASSED, BLOCKED, RETEST, RETEST, FAILED = range(1, 6)
+
+
+FAILED_TEST_RESULT_STATUS = APITestStatus.FAILED
