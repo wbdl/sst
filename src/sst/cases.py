@@ -195,7 +195,7 @@ class SSTTestCase(testtools.TestCase):
             failed = self.getDetails()
             status_id = testrail_helper.APITestStatus.RETEST if failed \
                    else testrail_helper.APITestStatus.PASSED
-            comment = json.dumps(str(failed)) if failed else None
+            comment = failed['traceback'].as_text() if failed else None
             return { 'case_id': self.case_id,
                      'status_id': status_id,
                      'comment': comment }
