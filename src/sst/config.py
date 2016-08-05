@@ -52,6 +52,7 @@ browser_type = 'firefox'
 _current_context = None
 shared_directory = None
 results_directory = None
+api_test_results = None
 flags = []
 __args__ = {}
 cache = {}

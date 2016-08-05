@@ -87,12 +87,13 @@ def runtests(test_regexps, results_directory, out,
     alltests.addTests(loader.discoverTestsFromTree(test_dir))
     alltests = filters.include_regexps(test_regexps, alltests)
     alltests = filters.exclude_regexps(excludes, alltests)
-    case_ids = [test.case_id for test in alltests._tests if test.case_id]
-    logger.debug('Cases in current run: {}'.format(case_ids))
 
-    testrail_helper.run_id = testrail_helper.create_test_run(case_ids)
-    logger.debug('Created test run with ID {} using the above cases'
-                 .format(testrail_helper.run_id))
+    if config.api_test_results:
+        case_ids = [test.case_id for test in alltests._tests if test.case_id]
+        logger.debug('Cases in current run: {}'.format(case_ids))
+        testrail_helper.run_id = testrail_helper.create_test_run(case_ids)
+        logger.debug('Created test run with ID {} using the above cases'
+                     .format(testrail_helper.run_id))
 
     if not alltests.countTestCases():
         # FIXME: Really needed ? Can't we just rely on the number of tests run
