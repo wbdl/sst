@@ -23,6 +23,8 @@ import shutil
 import subprocess
 import time
 
+from sst.remote_capabilities import SauceLabs, BrowserStack
+
 from selenium import webdriver
 from selenium.common import exceptions as selenium_exceptions
 from selenium.webdriver.common import utils
@@ -71,11 +73,16 @@ class RemoteBrowserFactory(BrowserFactory):
 
     def __init__(self, capabilities, remote_url):
         super(RemoteBrowserFactory, self).__init__()
-        self.capabilities = capabilities
+        if 'saucelabs' in remote_url:
+            self.capabilities = SauceLabs.capabilities
+        elif 'browserstack' in remote_url:
+            self.capabilities = BrowserStack.capabilities
+        else:
+            self.capabilities = capabilities
         self.remote_url = remote_url
 
     def browser(self):
-        return self.webdriver_class(self.capabilities, self.remote_url)
+        return self.webdriver_class(self.remote_url, self.capabilities)
 
 
 # MISSINGTEST: Exercise this class -- vila 2013-04-11
