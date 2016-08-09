@@ -109,7 +109,7 @@ def get_common_options():
     parser.add_option('-t', dest='api_test_results', default=None,
                       help=('select when to send API test results '
                       '(per_case, per_suite)'))
-    parser.add_option('-p', dest='use_proxy',
+    parser.add_option('--proxy', dest='use_proxy',
                        action='store_true', default=False,
                        help='enables BrowserMob proxy and stores HTTP archive'
                        ' files for each test. refer src/sst/proxy.py')
