@@ -48,7 +48,7 @@ def main():
     runtests.runtests(
         args, results_directory, sys.stdout,
         test_dir=cmd_opts.dir_name,
-        count_only=cmd_opts.count_only,
+        collect_only=cmd_opts.collect_only,
         report_format=cmd_opts.report_format,
         browser_factory=browser_factory,
         shared_directory=cmd_opts.shared_directory,
