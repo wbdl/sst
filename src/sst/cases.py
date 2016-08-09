@@ -21,6 +21,7 @@ from __future__ import print_function
 
 import ast
 import logging
+import json
 import os
 import pdb
 import testtools
@@ -28,11 +29,14 @@ import testtools.content
 import traceback
 
 from selenium.common import exceptions
+from testrail_api.testrail import APIError
 from sst import (
     actions,
     browsers,
     config,
     context,
+    xvfbdisplay,
+    testrail_helper,
     proxy,
     xvfbdisplay
 )
@@ -54,6 +58,7 @@ class SSTTestCase(testtools.TestCase):
     wait_poll = 0.1
     base_url = None
 
+    case_id = None
     results_directory = None
     screenshots_on = False
     debug_post_mortem = False
@@ -81,6 +86,10 @@ class SSTTestCase(testtools.TestCase):
             self.addCleanup(self.stop_proxy)
         self.start_browser()
         self.addCleanup(self.stop_browser)
+        if config.api_test_results == 'per_case':
+            self.addCleanup(self.post_api_test_result)
+        if config.api_test_results == 'per_suite':
+            self.addCleanup(self._store_case_result)
         if self.screenshots_on:
             self.addOnException(self.take_screenshot_and_page_dump)
         if self.debug_post_mortem:
@@ -166,6 +175,33 @@ class SSTTestCase(testtools.TestCase):
         self.addDetail('Page source',
                        testtools.content.text_content(page_source))
 
+    def post_api_test_result(self):
+        logger.debug("Sending test case result")
+        try:
+            result = self._get_case_result()
+            if result:
+                testrail_helper.send_result(result['case_id'],
+                                            result['status_id'],
+                                            result['comment'])
+        except APIError, e:
+            logger.debug("Could not send test case result \n" + str(e))
+
+    def _store_case_result(self):
+        if self._get_case_result():
+            testrail_helper.run_results.append(self._get_case_result())
+
+    def _get_case_result(self):
+        if self.case_id:
+            failed = self.getDetails()
+            status_id = testrail_helper.FAILED_TEST_RESULT_STATUS if failed \
+                   else testrail_helper.APITestStatus.PASSED
+            comment = failed['traceback'].as_text() if failed else None
+            return { 'case_id': self.case_id,
+                     'status_id': status_id,
+                     'comment': comment }
+        logger.debug("Could not find case_id for {}".format(self.id()))
+        return None
+
 
 class SSTScriptTestCase(SSTTestCase):
     """Test case used internally by sst-run and sst-remote."""
@@ -184,6 +220,14 @@ class SSTScriptTestCase(SSTTestCase):
         if context_row is None:
             context_row = {}
         self.context = context_row
+
+        # get id from script name for use when posting
+        # results to an external test case management tool
+        try:
+            self.case_id = int(filter(lambda x:x.isdigit(), self.script_name))
+        except ValueError:
+            # if script name doesn't contain a number skip it
+            pass
 
     def __str__(self):
         # Since we use run_test_script to encapsulate the call to the

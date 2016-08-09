@@ -24,6 +24,7 @@ import sys
 
 import testtools
 
+from testrail_api.testrail import APIError
 from sst import (
     browsers,
     cases,
@@ -32,6 +33,7 @@ from sst import (
     filters,
     loaders,
     results,
+    testrail_helper
 )
 
 # Maintaining compatibility until we deprecate the followings
@@ -66,6 +68,7 @@ def runtests(test_regexps, results_directory, out,
              extended=False,
              includes=None,
              excludes=None,
+             api_test_results=None,
              use_proxy=False):
     if not os.path.isdir(test_dir):
         raise RuntimeError('Specified directory %r does not exist'
@@ -84,6 +87,13 @@ def runtests(test_regexps, results_directory, out,
     alltests.addTests(loader.discoverTestsFromTree(test_dir))
     alltests = filters.include_regexps(test_regexps, alltests)
     alltests = filters.exclude_regexps(excludes, alltests)
+
+    if config.api_test_results:
+        case_ids = [test.case_id for test in alltests._tests if test.case_id]
+        logger.debug('Cases in current run: {}'.format(case_ids))
+        testrail_helper.run_id = testrail_helper.create_test_run(case_ids)
+        logger.debug('Created test run with ID {} using the above cases'
+                     .format(testrail_helper.run_id))
 
     if not alltests.countTestCases():
         # FIXME: Really needed ? Can't we just rely on the number of tests run
@@ -118,8 +128,17 @@ def runtests(test_regexps, results_directory, out,
         out.write('Test run interrupted\n')
     result.stopTestRun()
 
+    if config.api_test_results == 'per_suite':
+        post_api_test_results()
+
     return len(result.failures) + len(result.errors)
 
+def post_api_test_results():
+    logger.debug("Sending test run results")
+    try:
+        testrail_helper.send_results()
+    except APIError, e:
+        logger.debug("Could not send test results \n" + str(e))
 
 def find_shared_directory(test_dir, shared_directory):
     """This function is responsible for finding the shared directory.

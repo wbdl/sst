@@ -50,6 +50,9 @@ def main():
     if cmd_opts.results_directory:
         config.results_directory = cmd_opts.results_directory
 
+    if cmd_opts.api_test_results:
+        config.api_test_results = cmd_opts.api_test_results
+
     with cleaner:
         results_directory = config.results_directory
         if not results_directory:
@@ -69,6 +72,7 @@ def main():
             debug=cmd_opts.debug,
             extended=cmd_opts.extended_tracebacks,
             excludes=cmd_opts.excludes,
+            api_test_results=cmd_opts.api_test_results,
             use_proxy=cmd_opts.use_proxy
         )
 
