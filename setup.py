@@ -31,7 +31,7 @@ from sst import __version__
 
 
 NAME = 'sst'
-PACKAGES = ['sst', 'sst.scripts', 'sst.tests']
+PACKAGES = ['sst', 'sst.scripts', 'sst.tests', 'sst.testrail_api']
 DESCRIPTION = 'SST - Web Test Framework'
 URL = 'http://testutils.org/sst'
 LICENSE = 'Apache'
