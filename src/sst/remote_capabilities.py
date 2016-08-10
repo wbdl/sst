@@ -17,19 +17,42 @@
 #   limitations under the License.
 #
 
+import logging
+import requests
+import sauceclient
+
+logger = logging.getLogger('SST')
+
 class SauceLabs(object):
-    USERNAME = ''
-    ACCESS_KEY = ''
+    client = None
+    USERNAME = 'rmdaggett'
+    ACCESS_KEY = '5e95db45-67e7-46a6-b95d-79cb68bb2ff0'
     URL = 'http://{}:{}@ondemand.saucelabs.com:80/wd/hub'.format(USERNAME, ACCESS_KEY)
+    results = []
     capabilities = {'browserName': 'chrome', 'platform': 'Windows 7',
-                    'version': '51.0', 'screenResolution': '1920x1200'}
+                    'version': '52.0', 'screenResolution': '1920x1200'}
+
+    def __init__(self):
+        logger.debug('Creating sauceclient')
+        self.client = sauceclient.SauceClient(self.USERNAME, self.ACCESS_KEY,)
+
+    def send_result(self, session_id, name, result):
+        self.client.jobs.update_job(job_id=session_id, name=name, passed=result)
 
 class BrowserStack(object):
-    USERNAME = ''
-    ACCESS_KEY = ''
+    USERNAME = 'ryandaggett1'
+    ACCESS_KEY = 'jeP4x8qypqsa3PYZabRd'
     URL = 'http://{}:{}@hub.browserstack.com:80/wd/hub'.format(USERNAME, ACCESS_KEY)
+    results = []
     capabilities = {'browser': 'Chrome', 'browser_version': '52.0',
                     'os': 'Windows', 'os_version': '7',
                     'resolution': '1920x1080',
                     'browserstack.debug': True,
                     'chromeOptions': {'args': '--disable-extensions'}}
+
+    def __init__(self):
+        logger.debug('Creating BrowserStack client')
+
+    def send_result(self, session_id, result):
+        status = "completed" if result else "error"
+        requests.put('https://ryandaggett2:1PJNUhQkZyqfgECzPuPy@www.browserstack.com/automate/sessions/{}.json'.format(session_id), data={"status": status, "reason": ""})
