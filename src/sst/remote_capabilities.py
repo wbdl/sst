@@ -18,10 +18,16 @@
 #
 
 class SauceLabs(object):
+    USERNAME = ''
+    ACCESS_KEY = ''
+    URL = 'http://{}:{}@ondemand.saucelabs.com:80/wd/hub'.format(USERNAME, ACCESS_KEY)
     capabilities = {'browserName': 'chrome', 'platform': 'Windows 7',
                     'version': '51.0', 'screenResolution': '1920x1200'}
 
 class BrowserStack(object):
+    USERNAME = ''
+    ACCESS_KEY = ''
+    URL = 'http://{}:{}@hub.browserstack.com:80/wd/hub'.format(USERNAME, ACCESS_KEY)
     capabilities = {'browser': 'Chrome', 'browser_version': '52.0',
                     'os': 'Windows', 'os_version': '7',
                     'resolution': '1920x1080',
