@@ -28,6 +28,7 @@ import testtools
 import testtools.content
 import traceback
 
+from selenium import webdriver
 from selenium.common import exceptions
 from testrail_api.testrail import APIError
 from sst import (
@@ -37,6 +38,7 @@ from sst import (
     context,
     xvfbdisplay,
     testrail_helper,
+    remote_capabilities,
     proxy,
     xvfbdisplay
 )
@@ -66,6 +68,7 @@ class SSTTestCase(testtools.TestCase):
     use_proxy = False
     proxy = None
     proxy_address = None
+    remote = False
 
     def setUp(self):
         super(SSTTestCase, self).setUp()
@@ -90,6 +93,8 @@ class SSTTestCase(testtools.TestCase):
             self.addCleanup(self.post_api_test_result)
         if config.api_test_results == 'per_suite':
             self.addCleanup(self._store_case_result)
+        if isinstance(self.browser, webdriver.Remote):
+            self.addCleanup(self.post_remote_result)
         if self.screenshots_on:
             self.addOnException(self.take_screenshot_and_page_dump)
         if self.debug_post_mortem:
@@ -202,6 +207,11 @@ class SSTTestCase(testtools.TestCase):
         logger.debug("Could not find case_id for {}".format(self.id()))
         return None
 
+    def post_remote_result(self):
+        passed = False if self.getDetails() else True
+        client = remote_capabilities.SauceLabs()
+        # client = remote_capabilities.BrowserStack()
+        client.send_result(self.browser.session_id, name=self.id(), result=passed)
 
 class SSTScriptTestCase(SSTTestCase):
     """Test case used internally by sst-run and sst-remote."""
