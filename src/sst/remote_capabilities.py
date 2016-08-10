@@ -25,8 +25,8 @@ logger = logging.getLogger('SST')
 
 class SauceLabs(object):
     client = None
-    USERNAME = 'rmdaggett'
-    ACCESS_KEY = '5e95db45-67e7-46a6-b95d-79cb68bb2ff0'
+    USERNAME = ''
+    ACCESS_KEY = ''
     URL = 'http://{}:{}@ondemand.saucelabs.com:80/wd/hub'.format(USERNAME, ACCESS_KEY)
     results = []
     capabilities = {'browserName': 'chrome', 'platform': 'Windows 7',
@@ -40,8 +40,8 @@ class SauceLabs(object):
         self.client.jobs.update_job(job_id=session_id, name=name, passed=result)
 
 class BrowserStack(object):
-    USERNAME = 'ryandaggett1'
-    ACCESS_KEY = 'jeP4x8qypqsa3PYZabRd'
+    USERNAME = ''
+    ACCESS_KEY = ''
     URL = 'http://{}:{}@hub.browserstack.com:80/wd/hub'.format(USERNAME, ACCESS_KEY)
     results = []
     capabilities = {'browser': 'Chrome', 'browser_version': '52.0',
@@ -55,4 +55,4 @@ class BrowserStack(object):
 
     def send_result(self, session_id, result):
         status = "completed" if result else "error"
-        requests.put('https://ryandaggett2:1PJNUhQkZyqfgECzPuPy@www.browserstack.com/automate/sessions/{}.json'.format(session_id), data={"status": status, "reason": ""})
+        requests.put('https://username:accesskey@www.browserstack.com/automate/sessions/{}.json'.format(session_id), data={"status": status, "reason": ""})
