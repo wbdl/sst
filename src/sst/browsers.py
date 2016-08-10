@@ -75,11 +75,15 @@ class RemoteBrowserFactory(BrowserFactory):
         super(RemoteBrowserFactory, self).__init__()
         if 'saucelabs' in remote_url:
             self.capabilities = SauceLabs.capabilities
+            self.remote_url = SauceLabs.URL
+            logger.debug('Connecting to SauceLabs instance: {}'.format(self.remote_url))
         elif 'browserstack' in remote_url:
             self.capabilities = BrowserStack.capabilities
+            self.remote_url = BrowserStack.URL
+            logger.debug('Connecting to BrowserStack instance: {}'.format(self.remote_url))
         else:
             self.capabilities = capabilities
-        self.remote_url = remote_url
+            self.remote_url = remote_url
 
     def browser(self):
         return self.webdriver_class(self.remote_url, self.capabilities)
