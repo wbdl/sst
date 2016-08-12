@@ -145,7 +145,7 @@ Options::
     -c CONCURRENCY            concurrency (number of procs)
     --concurrency=CONCURRENCY concurrency (number of procs)
     -o RESULTS_DIRECTORY      directory where results should be stored
-    -p                        run tests with Browsermob Proxy enabled
+    --proxy                   run tests with Browsermob Proxy enabled
     -t                        post test results to API (per_case, per_suite)
 
 
