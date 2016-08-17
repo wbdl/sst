@@ -113,6 +113,9 @@ def get_common_options():
                        action='store_true', default=False,
                        help='enables BrowserMob proxy and stores HTTP archive'
                        ' files for each test. refer src/sst/proxy.py')
+    parser.add_option('-c', '--concurrency', dest='concurrency',
+                      default=1, type='int',
+                      help='concurrency (number of procs)')
     return parser
 
 
