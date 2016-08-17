@@ -56,6 +56,7 @@ def main():
         failfast=cmd_opts.failfast,
         debug=cmd_opts.debug,
         extended=cmd_opts.extended_tracebacks,
+        concurrency_num=cmd_opts.concurrency,
         # FIXME: not tested -- vila 2013-05-23
         excludes=cmd_opts.excludes
     )
