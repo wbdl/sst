@@ -33,10 +33,11 @@ class SauceLabs(object):
                     'version': '52.0', 'screenResolution': '1920x1200'}
 
     def __init__(self):
-        logger.debug('Creating sauceclient')
+        logger.debug('Creating SauceLabs client')
         self.client = sauceclient.SauceClient(self.USERNAME, self.ACCESS_KEY,)
 
     def send_result(self, session_id, name, result):
+        logger.debug('Sending result to SauceLabs')
         self.client.jobs.update_job(job_id=session_id, name=name, passed=result)
 
 class BrowserStack(object):
@@ -54,5 +55,6 @@ class BrowserStack(object):
         logger.debug('Creating BrowserStack client')
 
     def send_result(self, session_id, result):
+        logger.debug('Sending result to Browserstack')
         status = "completed" if result else "error"
         requests.put('https://username:accesskey@www.browserstack.com/automate/sessions/{}.json'.format(session_id), data={"status": status, "reason": ""})
