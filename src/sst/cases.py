@@ -38,10 +38,10 @@ from sst import (
     context,
     xvfbdisplay,
     testrail_helper,
-    remote_capabilities,
     proxy,
     xvfbdisplay
 )
+from sst.remote_capabilities import SauceLabs, BrowserStack
 
 logger = logging.getLogger('SST')
 
@@ -68,7 +68,7 @@ class SSTTestCase(testtools.TestCase):
     use_proxy = False
     proxy = None
     proxy_address = None
-    remote = False
+    remote_client = None
 
     def setUp(self):
         super(SSTTestCase, self).setUp()
@@ -93,7 +93,8 @@ class SSTTestCase(testtools.TestCase):
             self.addCleanup(self.post_api_test_result)
         if config.api_test_results == 'per_suite':
             self.addCleanup(self._store_case_result)
-        if isinstance(self.browser, webdriver.Remote):
+        if self.browser_factory.remote_client:
+            self.remote_client = self.browser_factory.remote_client
             self.addCleanup(self.post_remote_result)
         if self.screenshots_on:
             self.addOnException(self.take_screenshot_and_page_dump)
@@ -208,10 +209,11 @@ class SSTTestCase(testtools.TestCase):
         return None
 
     def post_remote_result(self):
-        passed = False if self.getDetails() else True
-        client = remote_capabilities.SauceLabs()
-        # client = remote_capabilities.BrowserStack()
-        client.send_result(self.browser.session_id, name=self.id(), result=passed)
+        result = False if self.getDetails() else True
+        if isinstance(self.remote_client, SauceLabs):
+            self.remote_client.send_result(self.browser.session_id, name=self.id(), result=result)
+        elif isinstance(self.remote_client, BrowserStack):
+            self.remote_client.send_result(self.browser.session_id, result=result)
 
 class SSTScriptTestCase(SSTTestCase):
     """Test case used internally by sst-run and sst-remote."""
