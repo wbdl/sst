@@ -44,6 +44,7 @@ class BrowserFactory(object):
     """
 
     webdriver_class = None
+    remote_client = None
 
     def __init__(self):
         super(BrowserFactory, self).__init__()
@@ -70,7 +71,6 @@ class BrowserFactory(object):
 class RemoteBrowserFactory(BrowserFactory):
 
     webdriver_class = webdriver.Remote
-    remote_client = None
 
     def __init__(self, capabilities, remote_url):
         super(RemoteBrowserFactory, self).__init__()
