@@ -17,6 +17,7 @@
 #   limitations under the License.
 #
 
+import imp
 import junitxml
 import logging
 import os
@@ -139,6 +140,13 @@ def post_api_test_results():
         testrail_helper.send_results()
     except APIError, e:
         logger.debug("Could not send test results \n" + str(e))
+
+def find_api_creds_module():
+    cwd = os.getcwd()
+    mod_path = os.path.join(cwd, 'testrail_config.py')
+    if not os.path.isfile(mod_path):
+        mod_path = os.path.join(os.path.dirname(cwd), 'testrail_config.py')
+    return imp.load_source('testrail_config', os.path.abspath(mod_path))
 
 def find_shared_directory(test_dir, shared_directory):
     """This function is responsible for finding the shared directory.
