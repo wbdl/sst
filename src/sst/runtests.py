@@ -90,11 +90,12 @@ def runtests(test_regexps, results_directory, out,
     alltests = filters.exclude_regexps(excludes, alltests)
 
     if config.api_test_results:
+        set_api_credentials()
         case_ids = [test.case_id for test in alltests._tests if test.case_id]
         logger.debug('Cases in current run: {}'.format(case_ids))
-        testrail_helper.run_id = testrail_helper.create_test_run(case_ids)
+        config.api_client.run_id = config.api_client.create_test_run(case_ids)
         logger.debug('Created test run with ID {} using the above cases'
-                     .format(testrail_helper.run_id))
+                     .format(config.api_client.run_id))
 
     if not alltests.countTestCases():
         # FIXME: Really needed ? Can't we just rely on the number of tests run
@@ -137,7 +138,7 @@ def runtests(test_regexps, results_directory, out,
 def post_api_test_results():
     logger.debug("Sending test run results")
     try:
-        testrail_helper.send_results()
+        config.api_client.send_results()
     except APIError, e:
         logger.debug("Could not send test results \n" + str(e))
 
@@ -147,6 +148,12 @@ def find_api_creds_module():
     if not os.path.isfile(mod_path):
         mod_path = os.path.join(os.path.dirname(cwd), 'testrail_config.py')
     return imp.load_source('testrail_config', os.path.abspath(mod_path))
+
+def set_api_credentials():
+    creds = find_api_creds_module()
+    config.api_client = testrail_helper.TestRailHelper(creds.url, creds.user,
+                                                       creds.password,
+                                                       creds.project_id)
 
 def find_shared_directory(test_dir, shared_directory):
     """This function is responsible for finding the shared directory.
