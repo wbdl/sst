@@ -180,15 +180,15 @@ class SSTTestCase(testtools.TestCase):
         try:
             result = self._get_case_result()
             if result:
-                testrail_helper.send_result(result['case_id'],
-                                            result['status_id'],
-                                            result['comment'])
+                config.api_client.send_result(result['case_id'],
+                                              result['status_id'],
+                                              result['comment'])
         except APIError, e:
             logger.debug("Could not send test case result \n" + str(e))
 
     def _store_case_result(self):
         if self._get_case_result():
-            testrail_helper.run_results.append(self._get_case_result())
+            config.api_client.run_results.append(self._get_case_result())
 
     def _get_case_result(self):
         if self.case_id:
