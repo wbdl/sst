@@ -1,6 +1,7 @@
 import json
 import logging
 from datetime import datetime
+from pytz import timezone
 from sst import config
 from testrail_api.testrail import *
 
@@ -17,7 +18,8 @@ class TestRailHelper(object):
         self.run_id = None
 
     def create_test_run(self, case_ids):
-        time = datetime.now().time().strftime("%I:%M %p")
+        tz = timezone('US/Eastern')
+        time = datetime.now(tz).time().strftime("%I:%M %p")
         try:
             run = self.client.send_post('add_run/{}'.format(self.project_id),
                   {
