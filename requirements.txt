@@ -4,3 +4,4 @@ selenium==2.53.0
 testtools==1.8.0
 browsermob-proxy==0.7.1
 sauceclient==0.2.1
+pytz==2013.7

@@ -53,6 +53,7 @@ _current_context = None
 shared_directory = None
 results_directory = None
 api_test_results = None
+api_client = None
 flags = []
 __args__ = {}
 cache = {}
