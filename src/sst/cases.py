@@ -200,20 +200,24 @@ class SSTTestCase(testtools.TestCase):
         if self.case_id:
             failed = self.getDetails()
             status_id = testrail_helper.FAILED_TEST_RESULT_STATUS if failed \
-                   else testrail_helper.APITestStatus.PASSED
+                else testrail_helper.APITestStatus.PASSED
             comment = failed['traceback'].as_text() if failed else None
-            return { 'case_id': self.case_id,
-                     'status_id': status_id,
-                     'comment': comment }
+            return {'case_id': self.case_id,
+                    'status_id': status_id,
+                    'comment': comment}
         logger.debug("Could not find case_id for {}".format(self.id()))
         return None
 
     def post_remote_result(self):
         result = False if self.getDetails() else True
         if isinstance(self.remote_client, SauceLabs):
-            self.remote_client.send_result(self.browser.session_id, name=self.id(), result=result)
+            self.remote_client.send_result(session_id=self.browser.session_id,
+                                           name=self.id(),
+                                           result=result)
         elif isinstance(self.remote_client, BrowserStack):
-            self.remote_client.send_result(self.browser.session_id, result=result)
+            self.remote_client.send_result(session_id=self.browser.session_id,
+                                           result=result)
+
 
 class SSTScriptTestCase(SSTTestCase):
     """Test case used internally by sst-run and sst-remote."""
@@ -236,7 +240,7 @@ class SSTScriptTestCase(SSTTestCase):
         # get id from script name for use when posting
         # results to an external test case management tool
         try:
-            self.case_id = int(filter(lambda x:x.isdigit(), self.script_name))
+            self.case_id = int(filter(lambda x: x.isdigit(), self.script_name))
         except ValueError:
             # if script name doesn't contain a number skip it
             pass
