@@ -75,15 +75,27 @@ class RemoteBrowserFactory(BrowserFactory):
     def __init__(self, capabilities, remote_url):
         super(RemoteBrowserFactory, self).__init__()
         if 'saucelabs' in remote_url:
-            self.remote_client = SauceLabs()
-            self.capabilities = SauceLabs.capabilities
-            self.remote_url = SauceLabs.URL
-            logger.debug('Connecting to SauceLabs instance: {}'.format(self.remote_url))
+            from sst import runtests
+            creds = runtests.set_client_credentials('saucelabs')
+            try:
+                self.remote_client = SauceLabs(creds.USERNAME,
+                                               creds.ACCESS_KEY,
+                                               creds.URL)
+                self.capabilities = creds.CAPABILITIES
+                self.remote_url = self.remote_client.URL
+                logger.debug('Connecting to SauceLabs instance: {}'
+                             .format(self.remote_url))
+            except:
+                raise Exception('Please create a sauce_config.py module in '
+                                'your test directory with your SauceLabs '
+                                'USERNAME, ACCESS_KEY, URL, '
+                                'and CAPABILITIES set.')
         elif 'browserstack' in remote_url:
             self.remote_client = BrowserStack()
             self.capabilities = BrowserStack.capabilities
             self.remote_url = BrowserStack.URL
-            logger.debug('Connecting to BrowserStack instance: {}'.format(self.remote_url))
+            logger.debug('Connecting to BrowserStack instance: {}'
+                         .format(self.remote_url))
         else:
             self.capabilities = capabilities
             self.remote_url = remote_url
