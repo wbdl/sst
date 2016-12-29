@@ -24,21 +24,22 @@ import sauceclient
 logger = logging.getLogger('SST')
 
 class SauceLabs(object):
-    client = None
-    USERNAME = ''
-    ACCESS_KEY = ''
-    URL = 'http://{}:{}@ondemand.saucelabs.com:80/wd/hub'.format(USERNAME, ACCESS_KEY)
-    results = []
-    capabilities = {'browserName': 'chrome', 'platform': 'Windows 7',
-                    'version': '52.0', 'screenResolution': '1920x1200'}
+    """Helper class for creating an instance of sauceclient and posting results.
+    Credentials should be defined in the directory where your tests
+    are stored in a sauce_config.py module."""
 
-    def __init__(self):
+    client = None
+    URL = None
+
+    def __init__(self, username, access_key, url):
         logger.debug('Creating SauceLabs client')
-        self.client = sauceclient.SauceClient(self.USERNAME, self.ACCESS_KEY,)
+        self.URL = url
+        self.client = sauceclient.SauceClient(username, access_key,)
 
     def send_result(self, session_id, name, result):
         logger.debug('Sending result to SauceLabs')
-        self.client.jobs.update_job(job_id=session_id, name=name, passed=result)
+        self.client.jobs.update_job(job_id=session_id, name=name,
+                                    passed=result)
 
 class BrowserStack(object):
     USERNAME = ''
