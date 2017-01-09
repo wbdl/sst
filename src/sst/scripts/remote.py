@@ -28,6 +28,7 @@ testtools.try_import('selenium')
 from sst import (
     browsers,
     command,
+    config,
     runtests,
 )
 
@@ -37,6 +38,9 @@ def main():
 
     results_directory = os.path.abspath('results')
     command.reset_directory(results_directory)
+
+    if cmd_opts.api_test_results:
+        config.api_test_results = cmd_opts.api_test_results
 
     browser_factory = browsers.RemoteBrowserFactory(
         {
@@ -48,7 +52,7 @@ def main():
     runtests.runtests(
         args, results_directory, sys.stdout,
         test_dir=cmd_opts.dir_name,
-        count_only=cmd_opts.count_only,
+        collect_only=cmd_opts.collect_only,
         report_format=cmd_opts.report_format,
         browser_factory=browser_factory,
         shared_directory=cmd_opts.shared_directory,
@@ -56,8 +60,10 @@ def main():
         failfast=cmd_opts.failfast,
         debug=cmd_opts.debug,
         extended=cmd_opts.extended_tracebacks,
+        concurrency_num=cmd_opts.concurrency,
         # FIXME: not tested -- vila 2013-05-23
-        excludes=cmd_opts.excludes
+        excludes=cmd_opts.excludes,
+        api_test_results=cmd_opts.api_test_results
     )
 
 

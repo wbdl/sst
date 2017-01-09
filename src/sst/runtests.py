@@ -34,6 +34,7 @@ from sst import (
     filters,
     loaders,
     results,
+    remote_capabilities,
     testrail_helper
 )
 
@@ -90,7 +91,7 @@ def runtests(test_regexps, results_directory, out,
     alltests = filters.exclude_regexps(excludes, alltests)
 
     if config.api_test_results:
-        set_api_credentials()
+        set_client_credentials('testrail')
         case_ids = [test.case_id for test in alltests._tests if test.case_id]
         logger.debug('Cases in current run: {}'.format(case_ids))
         config.api_client.run_id = config.api_client.create_test_run(case_ids)
@@ -142,18 +143,21 @@ def post_api_test_results():
     except APIError, e:
         logger.debug("Could not send test results \n" + str(e))
 
-def find_api_creds_module():
+def find_client_credentials(module):
     cwd = os.getcwd()
-    mod_path = os.path.join(cwd, 'testrail_config.py')
+    mod_path = os.path.join(cwd, '{}.py'.format(module))
     if not os.path.isfile(mod_path):
-        mod_path = os.path.join(os.path.dirname(cwd), 'testrail_config.py')
-    return imp.load_source('testrail_config', os.path.abspath(mod_path))
+        mod_path = os.path.join(os.path.dirname(cwd), '{}.py'.format(module))
+    return imp.load_source(module, os.path.abspath(mod_path))
 
-def set_api_credentials():
-    creds = find_api_creds_module()
-    config.api_client = testrail_helper.TestRailHelper(creds.url, creds.user,
-                                                       creds.password,
-                                                       creds.project_id)
+def set_client_credentials(client):
+    if client == 'testrail':
+        creds = find_client_credentials('testrail_config')
+        config.api_client = testrail_helper.TestRailHelper(creds.url, creds.user,
+                                                        creds.password,
+                                                        creds.project_id)
+    elif client == 'saucelabs':
+        return find_client_credentials('sauce_config')
 
 def find_shared_directory(test_dir, shared_directory):
     """This function is responsible for finding the shared directory.

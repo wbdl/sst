@@ -23,6 +23,8 @@ import shutil
 import subprocess
 import time
 
+from sst.remote_capabilities import SauceLabs
+
 from selenium import webdriver
 from selenium.common import exceptions as selenium_exceptions
 from selenium.webdriver.common import utils
@@ -42,6 +44,7 @@ class BrowserFactory(object):
     """
 
     webdriver_class = None
+    remote_client = None
 
     def __init__(self):
         super(BrowserFactory, self).__init__()
@@ -71,11 +74,29 @@ class RemoteBrowserFactory(BrowserFactory):
 
     def __init__(self, capabilities, remote_url):
         super(RemoteBrowserFactory, self).__init__()
-        self.capabilities = capabilities
-        self.remote_url = remote_url
+        if 'saucelabs' in remote_url:
+            from sst import runtests
+            creds = runtests.set_client_credentials('saucelabs')
+            try:
+                self.remote_client = SauceLabs(creds.USERNAME,
+                                               creds.ACCESS_KEY,
+                                               creds.URL)
+                self.capabilities = creds.CAPABILITIES
+                self.remote_url = self.remote_client.URL
+                logger.debug('Connecting to SauceLabs instance: {}'
+                             .format(self.remote_url))
+            except:
+                raise Exception('Please create a sauce_config.py module in '
+                                'your test directory with your SauceLabs '
+                                'USERNAME, ACCESS_KEY, URL, '
+                                'and CAPABILITIES set.')
+
+        else:
+            self.capabilities = capabilities
+            self.remote_url = remote_url
 
     def browser(self):
-        return self.webdriver_class(self.capabilities, self.remote_url)
+        return self.webdriver_class(self.remote_url, self.capabilities)
 
 
 # MISSINGTEST: Exercise this class -- vila 2013-04-11
