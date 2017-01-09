@@ -41,7 +41,7 @@ from sst import (
     proxy,
     xvfbdisplay
 )
-from sst.remote_capabilities import SauceLabs, BrowserStack
+from sst.remote_capabilities import SauceLabs
 
 logger = logging.getLogger('SST')
 
@@ -214,10 +214,6 @@ class SSTTestCase(testtools.TestCase):
             self.remote_client.send_result(session_id=self.browser.session_id,
                                            name=self.id(),
                                            result=result)
-        elif isinstance(self.remote_client, BrowserStack):
-            self.remote_client.send_result(session_id=self.browser.session_id,
-                                           result=result)
-
 
 class SSTScriptTestCase(SSTTestCase):
     """Test case used internally by sst-run and sst-remote."""

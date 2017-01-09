@@ -40,22 +40,3 @@ class SauceLabs(object):
         logger.debug('Sending result to SauceLabs')
         self.client.jobs.update_job(job_id=session_id, name=name,
                                     passed=result)
-
-class BrowserStack(object):
-    USERNAME = ''
-    ACCESS_KEY = ''
-    URL = 'http://{}:{}@hub.browserstack.com:80/wd/hub'.format(USERNAME, ACCESS_KEY)
-    results = []
-    capabilities = {'browser': 'Chrome', 'browser_version': '52.0',
-                    'os': 'Windows', 'os_version': '7',
-                    'resolution': '1920x1080',
-                    'browserstack.debug': True,
-                    'chromeOptions': {'args': '--disable-extensions'}}
-
-    def __init__(self):
-        logger.debug('Creating BrowserStack client')
-
-    def send_result(self, session_id, result):
-        logger.debug('Sending result to Browserstack')
-        status = "completed" if result else "error"
-        requests.put('https://username:accesskey@www.browserstack.com/automate/sessions/{}.json'.format(session_id), data={"status": status, "reason": ""})

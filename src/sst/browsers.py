@@ -23,7 +23,7 @@ import shutil
 import subprocess
 import time
 
-from sst.remote_capabilities import SauceLabs, BrowserStack
+from sst.remote_capabilities import SauceLabs
 
 from selenium import webdriver
 from selenium.common import exceptions as selenium_exceptions
@@ -90,12 +90,7 @@ class RemoteBrowserFactory(BrowserFactory):
                                 'your test directory with your SauceLabs '
                                 'USERNAME, ACCESS_KEY, URL, '
                                 'and CAPABILITIES set.')
-        elif 'browserstack' in remote_url:
-            self.remote_client = BrowserStack()
-            self.capabilities = BrowserStack.capabilities
-            self.remote_url = BrowserStack.URL
-            logger.debug('Connecting to BrowserStack instance: {}'
-                         .format(self.remote_url))
+
         else:
             self.capabilities = capabilities
             self.remote_url = remote_url
