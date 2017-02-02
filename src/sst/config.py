@@ -69,4 +69,5 @@ blacklist = ['micpn.com', 'switchads.com', 'mathtag.com', 'adnxs.com',
            'adsrvr.org', 'dpclk.com', 'rubiconproject.com',
            'doubleclick.net', 'rfihub.com', 'quantserve.com',
            'advertising.com', 'tidaltv.com', 'moatads.com',
-           'adform.net', 'turn.com', 'chango.com', 'nr-data.net']
+           'adform.net', 'turn.com', 'chango.com', 'nr-data.net', 'adroll.com',
+           'mediaforge.com', 'linksynergy.com', 'adtechus.com']
