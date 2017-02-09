@@ -159,6 +159,9 @@ def set_client_credentials(client):
     elif client == 'saucelabs':
         return find_client_credentials('sauce_config')
 
+    elif client == 'appium':
+        return find_client_credentials('appium_config')
+
 def find_shared_directory(test_dir, shared_directory):
     """This function is responsible for finding the shared directory.
     It implements the following rule:
