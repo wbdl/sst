@@ -70,4 +70,5 @@ blacklist = ['micpn.com', 'switchads.com', 'mathtag.com', 'adnxs.com',
            'doubleclick.net', 'rfihub.com', 'quantserve.com',
            'advertising.com', 'tidaltv.com', 'moatads.com',
            'adform.net', 'turn.com', 'chango.com', 'nr-data.net', 'adroll.com',
-           'mediaforge.com', 'linksynergy.com', 'adtechus.com']
+           'mediaforge.com', 'linksynergy.com', 'adtechus.com', 'criteo.net',
+           'openx.net', 'bluekai.com', 'bkrtx.com', 'indexww.com']
