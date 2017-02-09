@@ -22,6 +22,7 @@ import platform
 import shutil
 import subprocess
 import time
+import appium
 
 from sst.remote_capabilities import SauceLabs
 
@@ -114,6 +115,21 @@ class ChromeFactory(BrowserFactory):
 
     def browser(self):
         return self.webdriver_class(desired_capabilities=self.capabilities)
+
+
+class AppiumFactory(BrowserFactory):
+
+    webdriver_class = appium.webdriver.Remote
+
+    def setup_for_test(self, test):
+        from sst import runtests
+        creds = runtests.set_client_credentials('appium')
+        self.server, self.caps = creds.SERVER, creds.CAPABILITIES
+        logger.debug("Appium capabilities: {}".format(self.caps))
+
+    def browser(self):
+        return self.webdriver_class(self.server, self.caps)
+
 
 # MISSINGTEST: Exercise this class (requires windows) -- vila 2013-04-11
 class IeFactory(BrowserFactory):
@@ -253,4 +269,5 @@ browser_factories = {
     'Ie': IeFactory,
     'Opera': OperaFactory,
     'PhantomJS': PhantomJSFactory,
+    'Appium': AppiumFactory
 }
