@@ -107,6 +107,13 @@ class ChromeFactory(BrowserFactory):
     def setup_for_test(self, test):
         chrome_options = Options()
         chrome_options.add_argument("test-type")
+        chrome_options.add_argument("disable-infobars")
+        chrome_options.add_experimental_option('prefs', {
+            'credentials_enable_service': False,
+            'profile': {
+                'password_manager_enabled': False
+            }
+        })
         if test.use_proxy:
             chrome_options.add_argument("--proxy-server={0}".format(test.proxy_address))
         self.capabilities = chrome_options.to_capabilities()
