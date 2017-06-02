@@ -1,6 +1,6 @@
 junitxml
 python-subunit
-selenium==2.53.0
+selenium==3.4.3
 testtools==1.8.0
 browsermob-proxy==0.7.1
 sauceclient==0.2.1
