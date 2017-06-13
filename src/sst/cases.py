@@ -60,6 +60,7 @@ class SSTTestCase(testtools.TestCase):
     wait_poll = 0.1
     base_url = None
 
+    run_id = None
     case_id = None
     results_directory = None
     screenshots_on = False
@@ -182,11 +183,13 @@ class SSTTestCase(testtools.TestCase):
                        testtools.content.text_content(page_source))
 
     def post_api_test_result(self):
-        logger.debug("Sending test case result")
+        logger.debug("Entered send result, run id is {}".format(self.run_id))
         try:
             result = self._get_case_result()
             if result:
-                config.api_client.send_result(result['case_id'],
+                logger.debug("Sending test case result (Run: {} Case: {})".format(self.run_id, result['case_id']))
+                config.api_client.send_result(self.run_id,
+                                              result['case_id'],
                                               result['status_id'],
                                               result['comment'])
         except APIError, e:
