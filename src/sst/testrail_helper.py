@@ -1,7 +1,6 @@
 import json
 import logging
 from datetime import datetime
-from pytz import timezone
 from sst import config
 from testrail_api.testrail import *
 
@@ -15,20 +14,22 @@ class TestRailHelper(object):
         self.client.password = password
         self.project_id = project_id
         self.run_results = []
-        self.run_id = None
+        self.run_ids = []
 
-    def create_test_run(self, case_ids):
-        tz = timezone('US/Eastern')
-        time = datetime.now(tz).time().strftime("%I:%M %p")
+    def create_test_run(self, case_ids, platform):
+        time = datetime.now().time().strftime("%I:%M %p")
         try:
             run = self.client.send_post('add_run/{}'.format(self.project_id),
                   {
-                      "name": "Automation Test Run {}".format(time),
+                      "name": "Automation Test Run - {} - {}".format(platform,
+                                                                     time),
                       "include_all": False,
                       "case_ids": case_ids
                   }
             )
-            return run['id']
+            run_data = dict(run_id=run['id'], platform=platform)
+            self.run_ids.append(run_data)
+            return run_data
         except Exception as e:
             logger.debug("Could not create TestRail test run \n" + str(e))
 
@@ -44,7 +45,7 @@ class TestRailHelper(object):
             logger.debug("Could not send TestRail results \n" + str(e))
 
     # add individual test case result to test run
-    def send_result(self, case_id, status_id, comment=None):
+    def send_result(self, run_id, case_id, status_id, comment=None):
         result = {
             "status_id": status_id,
             "comment": comment
@@ -52,7 +53,7 @@ class TestRailHelper(object):
         self.store_json_results(result, case_id)
         try:
             run = self.client.send_post('add_result_for_case/{}/{}'
-                                        .format(self.run_id, case_id), result)
+                                        .format(run_id, case_id), result)
         except Exception as e:
             logger.debug("Could not send TestRail results \n" + str(e))
 
