@@ -94,10 +94,12 @@ def runtests(test_regexps, results_directory, out,
     if config.api_test_results:
         set_client_credentials('testrail')
         if browser_factory.remote_client:
+            client = config.api_client
+            test_plan = client.create_test_plan()
             for browser in browser_factory.browsers:
                 tests = [t.case_id for t in alltests._tests if t.case_id]
                 ids = list(OrderedDict.fromkeys(tests))
-                client = config.api_client
+
                 platform_string = '{} - {} - {}'.format(browser['platform'],
                                                         browser['browserName'],
                                                         browser['version'])
@@ -107,7 +109,7 @@ def runtests(test_regexps, results_directory, out,
                     if browser['browserName'] in test.context['browserName']:
                         test.run_id = test_run['run_id']
             logger.debug('Created test runs {} using the above cases'
-                         .format(client.run_ids))
+                         .format(client.runs))
 
     if not alltests.countTestCases():
         # FIXME: Really needed ? Can't we just rely on the number of tests run
