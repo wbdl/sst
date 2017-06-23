@@ -1,6 +1,7 @@
 import json
 import logging
 from datetime import datetime
+from pytz import timezone
 from sst import config
 from testrail_api.testrail import *
 
@@ -13,22 +14,43 @@ class TestRailHelper(object):
         self.client.user = user
         self.client.password = password
         self.project_id = project_id
-        self.run_results = []
-        self.run_ids = []
+        self.run_results = {}
+        self.runs = []
+        self.plan_id = None
+
+    def _get_time(self):
+        return datetime.now(timezone('US/Eastern')).time().strftime('%I:%M %p')
+
+    def _get_suite(self):
+        return self.client.send_get('get_suites/{}'.format(self.project_id))
+
+    def create_test_plan(self):
+        time = self._get_time()
+        try:
+            plan = self.client.send_post('add_plan/{}'.format(self.project_id),
+                {
+                    "name": "Automation Test Plan - {}".format(time)
+                }
+            )
+            self.plan_id = plan['id']
+        except Exception as e:
+            logger.debug("Could not create TestRail test plan \n" + str(e))
 
     def create_test_run(self, case_ids, platform):
-        time = datetime.now().time().strftime("%I:%M %p")
+        time = self._get_time()
+        suite_id = self._get_suite()[0]['id']
         try:
-            run = self.client.send_post('add_run/{}'.format(self.project_id),
+            run = self.client.send_post('add_plan_entry/{}'.format(self.plan_id),
                   {
                       "name": "Automation Test Run - {} - {}".format(platform,
                                                                      time),
+                      "suite_id": suite_id,
                       "include_all": False,
                       "case_ids": case_ids
                   }
             )
-            run_data = dict(run_id=run['id'], platform=platform)
-            self.run_ids.append(run_data)
+            run_data = dict(run_id=run['runs'][0]['id'], platform=platform)
+            self.runs.append(run_data)
             return run_data
         except Exception as e:
             logger.debug("Could not create TestRail test run \n" + str(e))
@@ -37,10 +59,11 @@ class TestRailHelper(object):
     def send_results(self):
         self.store_json_results(self.run_results)
         try:
-            run = self.client.send_post('add_results_for_cases/{}'
-                      .format(self.run_id),
-                      { "results": self.run_results }
-            )
+            for r in self.runs:
+                run = self.client.send_post('add_results_for_cases/{}'
+                                            .format(r['run_id']),
+                                            {'results': self.run_results}
+                                            )
         except Exception as e:
             logger.debug("Could not send TestRail results \n" + str(e))
 
