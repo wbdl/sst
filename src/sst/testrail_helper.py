@@ -36,24 +36,36 @@ class TestRailHelper(object):
         except Exception as e:
             logger.debug("Could not create TestRail test plan \n" + str(e))
 
-    def create_test_run(self, case_ids, platform):
+    def create_test_run(self, case_ids, platform=None):
+        endpoint = None
         time = self._get_time()
-        suite_id = self._get_suite()[0]['id']
-        try:
-            run = self.client.send_post('add_plan_entry/{}'.format(self.plan_id),
-                  {
-                      "name": "Automation Test Run - {} - {}".format(platform,
-                                                                     time),
-                      "suite_id": suite_id,
-                      "include_all": False,
-                      "case_ids": case_ids
-                  }
-            )
-            run_data = dict(run_id=run['runs'][0]['id'], platform=platform)
-            self.runs.append(run_data)
-            return run_data
-        except Exception as e:
-            logger.debug("Could not create TestRail test run \n" + str(e))
+        payload = {"include_all": False,
+                   "case_ids": case_ids}
+
+        if not platform:
+            endpoint = 'add_run/{}'.format(self.project_id)
+            payload.update({"name": "Automation Test Run {}".format(time)})
+            try:
+                run_id = self.client.send_post(endpoint, payload)['id']
+                self.runs.append(run_id)
+                return run_id
+            except Exception as e:
+                logger.debug("Could not create TestRail test run \n" + str(e))
+        else:
+            suite_id = self._get_suite()[0]['id']
+            endpoint = 'add_plan_entry/{}'.format(self.plan_id)
+            payload.update({"name": "Automation Test Run - {} - {}".format(
+                                                                    platform,
+                                                                    time),
+                            "suite_id": suite_id
+                            })
+            try:
+                run = self.client.send_post(endpoint, payload)
+                run_data = dict(run_id=run['runs'][0]['id'], platform=platform)
+                self.runs.append(run_data)
+                return run_data
+            except Exception as e:
+                logger.debug("Could not create TestRail test run \n" + str(e))
 
     # add test case results to test run
     def send_results(self):

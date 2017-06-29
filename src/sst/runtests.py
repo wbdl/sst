@@ -52,7 +52,7 @@ SSTTestCase = cases.SSTTestCase
 SSTScriptTestCase = cases.SSTScriptTestCase
 
 
-__all__ = ['runtests']
+__all__ = ('runtests')
 
 logger = logging.getLogger('SST')
 
@@ -93,9 +93,9 @@ def runtests(test_regexps, results_directory, out,
 
     if config.api_test_results:
         set_client_credentials('testrail')
+        client = config.api_client
         if browser_factory.remote_client:
-            client = config.api_client
-            test_plan = client.create_test_plan()
+            client.create_test_plan()
             for browser in browser_factory.browsers:
                 tests = [t.case_id for t in alltests._tests if t.case_id]
                 ids = list(OrderedDict.fromkeys(tests))
@@ -104,12 +104,23 @@ def runtests(test_regexps, results_directory, out,
                                                         browser['browserName'],
                                                         browser['version'])
                 test_run = client.create_test_run(ids, platform_string)
-                logger.debug('Cases in current run ({}:{}): {}'.format(browser['browserName'], test_run['run_id'], ids))
+                logger.debug('Cases in current run ({}:{}): {}'.format(
+                              browser['browserName'],
+                              test_run['run_id'],
+                              ids))
                 for test in alltests._tests:
                     if browser['browserName'] in test.context['browserName']:
                         test.run_id = test_run['run_id']
             logger.debug('Created test runs {} using the above cases'
                          .format(client.runs))
+        else:
+            tests = [t.case_id for t in alltests._tests if t.case_id]
+            logger.debug('Cases in current run: {}'.format(tests))
+            run_id = config.api_client.create_test_run(tests)
+            for test in alltests._tests:
+                test.run_id = run_id
+            logger.debug('Created test run {} using above cases'.format(
+                          run_id))
 
     if not alltests.countTestCases():
         # FIXME: Really needed ? Can't we just rely on the number of tests run
