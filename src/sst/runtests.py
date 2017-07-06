@@ -90,7 +90,6 @@ def runtests(test_regexps, results_directory, out,
     alltests.addTests(loader.discoverTestsFromTree(test_dir))
     alltests = filters.include_regexps(test_regexps, alltests)
     alltests = filters.exclude_regexps(excludes, alltests)
-
     if config.api_test_results:
         set_client_credentials('testrail')
         client = config.api_client
@@ -154,9 +153,6 @@ def runtests(test_regexps, results_directory, out,
     except KeyboardInterrupt:
         out.write('Test run interrupted\n')
     result.stopTestRun()
-
-    if config.api_test_results == 'per_suite':
-        post_api_test_results()
 
     return len(result.failures) + len(result.errors)
 
