@@ -90,10 +90,8 @@ class SSTTestCase(testtools.TestCase):
             self.addCleanup(self.stop_proxy)
         self.start_browser()
         self.addCleanup(self.stop_browser)
-        if config.api_test_results == 'per_case':
+        if config.api_test_results:
             self.addCleanup(self.post_api_test_result)
-        if config.api_test_results == 'per_suite':
-            self.addCleanup(self._store_case_result)
         if self.browser_factory.remote_client:
             self.remote_client = self.browser_factory.remote_client
             self.addCleanup(self.post_remote_result)
@@ -194,10 +192,6 @@ class SSTTestCase(testtools.TestCase):
                                               result['comment'])
         except APIError, e:
             logger.debug("Could not send test case result \n" + str(e))
-
-    def _store_case_result(self):
-        if self._get_case_result():
-            config.api_client.run_results.append(self._get_case_result())
 
     def _get_case_result(self):
         if self.case_id:
