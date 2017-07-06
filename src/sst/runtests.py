@@ -25,6 +25,7 @@ import sys
 
 import testtools
 
+from collections import OrderedDict
 from testrail_api.testrail import APIError
 from sst import (
     browsers,
@@ -51,7 +52,7 @@ SSTTestCase = cases.SSTTestCase
 SSTScriptTestCase = cases.SSTScriptTestCase
 
 
-__all__ = ['runtests']
+__all__ = ('runtests')
 
 logger = logging.getLogger('SST')
 
@@ -89,14 +90,36 @@ def runtests(test_regexps, results_directory, out,
     alltests.addTests(loader.discoverTestsFromTree(test_dir))
     alltests = filters.include_regexps(test_regexps, alltests)
     alltests = filters.exclude_regexps(excludes, alltests)
-
     if config.api_test_results:
         set_client_credentials('testrail')
-        case_ids = [test.case_id for test in alltests._tests if test.case_id]
-        logger.debug('Cases in current run: {}'.format(case_ids))
-        config.api_client.run_id = config.api_client.create_test_run(case_ids)
-        logger.debug('Created test run with ID {} using the above cases'
-                     .format(config.api_client.run_id))
+        client = config.api_client
+        if browser_factory.remote_client:
+            client.create_test_plan()
+            for browser in browser_factory.browsers:
+                tests = [t.case_id for t in alltests._tests if t.case_id]
+                ids = list(OrderedDict.fromkeys(tests))
+
+                platform_string = '{} - {} - {}'.format(browser['platform'],
+                                                        browser['browserName'],
+                                                        browser['version'])
+                test_run = client.create_test_run(ids, platform_string)
+                logger.debug('Cases in current run ({}:{}): {}'.format(
+                              browser['browserName'],
+                              test_run['run_id'],
+                              ids))
+                for test in alltests._tests:
+                    if browser['browserName'] in test.context['browserName']:
+                        test.run_id = test_run['run_id']
+            logger.debug('Created test runs {} using the above cases'
+                         .format(client.runs))
+        else:
+            tests = [t.case_id for t in alltests._tests if t.case_id]
+            logger.debug('Cases in current run: {}'.format(tests))
+            run_id = config.api_client.create_test_run(tests)
+            for test in alltests._tests:
+                test.run_id = run_id
+            logger.debug('Created test run {} using above cases'.format(
+                          run_id))
 
     if not alltests.countTestCases():
         # FIXME: Really needed ? Can't we just rely on the number of tests run
@@ -131,9 +154,6 @@ def runtests(test_regexps, results_directory, out,
         out.write('Test run interrupted\n')
     result.stopTestRun()
 
-    if config.api_test_results == 'per_suite':
-        post_api_test_results()
-
     return len(result.failures) + len(result.errors)
 
 def post_api_test_results():
@@ -153,9 +173,10 @@ def find_client_credentials(module):
 def set_client_credentials(client):
     if client == 'testrail':
         creds = find_client_credentials('testrail_config')
-        config.api_client = testrail_helper.TestRailHelper(creds.url, creds.user,
-                                                        creds.password,
-                                                        creds.project_id)
+        config.api_client = testrail_helper.TestRailHelper(creds.url,
+                                                           creds.user,
+                                                           creds.password,
+                                                           creds.project_id)
     elif client == 'saucelabs':
         return find_client_credentials('sauce_config')
 
