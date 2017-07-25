@@ -102,6 +102,9 @@ class RemoteBrowserFactory(BrowserFactory):
                              'version': test.context['version'],
                              'screenResolution': test.context['screenResolution'],
                              'idleTimeout': 300}
+        if 'chromeOptions' in test.context:
+            self.capabilities['chromeOptions'] = test.context['chromeOptions']
+
         logger.debug('Remote capabilities set: {}'.format(self.capabilities))
 
     def browser(self):
