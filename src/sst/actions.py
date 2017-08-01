@@ -351,7 +351,7 @@ def run_test(name, **kwargs):
     logger.debug('Executing test: %s' % name)
     return context.run_test(name, kwargs)
 
-
+@retry_on_exception(TimeoutException, retries=1)
 def go_to(url='', wait=True):
     """Go to a URL.
 
