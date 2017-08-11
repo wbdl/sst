@@ -1373,6 +1373,7 @@ def get_element_by_xpath(selector):
     return elements[0]
 
 
+@retry_on_exception(AssertionError, retries=1)
 def _waitforbody():
     poll_for_element((By.TAG_NAME, 'body'))
 
