@@ -24,6 +24,7 @@ import subprocess
 import time
 import appium
 
+from sst import config
 from sst.remote_capabilities import SauceLabs
 
 from selenium import webdriver
@@ -82,7 +83,7 @@ class RemoteBrowserFactory(BrowserFactory):
                 self.remote_client = SauceLabs(creds.USERNAME,
                                                creds.ACCESS_KEY,
                                                creds.URL)
-                self.capabilities = creds.CAPABILITIES
+                self.browsers = creds.BROWSERS
                 self.remote_url = self.remote_client.URL
                 logger.debug('Connecting to SauceLabs instance: {}'
                              .format(self.remote_url))
@@ -90,11 +91,22 @@ class RemoteBrowserFactory(BrowserFactory):
                 raise Exception('Please create a sauce_config.py module in '
                                 'your test directory with your SauceLabs '
                                 'USERNAME, ACCESS_KEY, URL, '
-                                'and CAPABILITIES set.')
+                                'and BROWSERS set.')
 
         else:
             self.capabilities = capabilities
             self.remote_url = remote_url
+
+    def setup_for_test(self, test):
+        self.capabilities = {'platform': test.context['platform'],
+                             'browserName': test.context['browserName'],
+                             'version': test.context['version'],
+                             'screenResolution': test.context['screenResolution'],
+                             'idleTimeout': 300}
+        if 'chromeOptions' in test.context:
+            self.capabilities['chromeOptions'] = test.context['chromeOptions']
+
+        logger.debug('Remote capabilities set: {}'.format(self.capabilities))
 
     def browser(self):
         return self.webdriver_class(self.remote_url, self.capabilities)
@@ -108,6 +120,13 @@ class ChromeFactory(BrowserFactory):
     def setup_for_test(self, test):
         chrome_options = Options()
         chrome_options.add_argument("test-type")
+        chrome_options.add_argument("disable-infobars")
+        chrome_options.add_experimental_option('prefs', {
+            'credentials_enable_service': False,
+            'profile': {
+                'password_manager_enabled': False
+            }
+        })
         if test.use_proxy:
             chrome_options.add_argument("--proxy-server={0}".format(test.proxy_address))
         self.capabilities = chrome_options.to_capabilities()

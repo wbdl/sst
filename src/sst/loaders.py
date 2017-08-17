@@ -214,8 +214,15 @@ class SSTestLoader(TestLoader):
                 test = self.loadTestFromScript(dir_name, script_name, row)
                 suite.addTest(test)
         else:
-            test = self.loadTestFromScript(dir_name, script_name)
-            suite.addTest(test)
+            if self.browser_factory.remote_client:
+                for browser in self.browser_factory.browsers:
+                    test = self.loadTestFromScript(dir_name,
+                                                   script_name,
+                                                   browser)
+                    suite.addTest(test)
+            else:
+                test = self.loadTestFromScript(dir_name, script_name)
+                suite.addTest(test)
         return suite
 
     def loadTestFromScript(self, dir_name, script_name, context=None):

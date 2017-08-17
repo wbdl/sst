@@ -52,6 +52,7 @@ from pdb import set_trace as debug
 from urlparse import urljoin, urlparse
 
 from selenium.webdriver.common import action_chains, keys
+from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -67,7 +68,7 @@ from selenium.common.exceptions import (
 
 from sst import config
 
-__all__ = [
+__all__ = (
     'accept_alert', 'add_cleanup', 'assert_attribute', 'assert_button',
     'assert_checkbox', 'assert_checkbox_value', 'assert_css_property',
     'assert_displayed', 'assert_dropdown', 'assert_dropdown_value',
@@ -94,7 +95,7 @@ __all__ = [
     'switch_to_active_window', 'switch_to_frame', 'switch_to_window',
     'take_screenshot', 'toggle_checkbox', 'wait_for', 'wait_for_and_refresh',
     'write_textfield'
-]
+)
 
 
 _check_flags = True
@@ -350,7 +351,7 @@ def run_test(name, **kwargs):
     logger.debug('Executing test: %s' % name)
     return context.run_test(name, kwargs)
 
-
+@retry_on_exception(TimeoutException, retries=1)
 def go_to(url='', wait=True):
     """Go to a URL.
 
@@ -1372,9 +1373,9 @@ def get_element_by_xpath(selector):
     return elements[0]
 
 
+@retry_on_exception(AssertionError, retries=1)
 def _waitforbody():
-    wait_for(get_element, tag='body')
-
+    poll_for_element((By.TAG_NAME, 'body'))
 
 def get_page_source():
     """Gets the source of the current page."""
@@ -1881,6 +1882,7 @@ def poll_for_element(locator, wait=10, frequency=1):
 
     """
     try:
+        logger.debug("Waiting for element: {}".format(locator))
         return (WebDriverWait(_test.browser, wait, poll_frequency=frequency)
                .until(EC.visibility_of_element_located(locator)))
     except TimeoutException:

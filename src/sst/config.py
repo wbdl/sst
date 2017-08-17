@@ -48,7 +48,7 @@ The `sst.config` module has the following information::
 """
 import os
 
-browser_type = 'firefox'
+browser_type = None
 _current_context = None
 shared_directory = None
 results_directory = None
@@ -69,4 +69,6 @@ blacklist = ['micpn.com', 'switchads.com', 'mathtag.com', 'adnxs.com',
            'adsrvr.org', 'dpclk.com', 'rubiconproject.com',
            'doubleclick.net', 'rfihub.com', 'quantserve.com',
            'advertising.com', 'tidaltv.com', 'moatads.com',
-           'adform.net', 'turn.com', 'chango.com', 'nr-data.net']
+           'adform.net', 'turn.com', 'chango.com', 'nr-data.net', 'adroll.com',
+           'mediaforge.com', 'linksynergy.com', 'adtechus.comovie', 'criteo.net',
+           'openx.net', 'bluekai.com', 'bkrtx.com', 'indexww.com', 'simpli.fi']

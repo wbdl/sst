@@ -14,37 +14,73 @@ class TestRailHelper(object):
         self.client.user = user
         self.client.password = password
         self.project_id = project_id
-        self.run_results = []
-        self.run_id = None
+        self.run_results = {}
+        self.runs = []
+        self.plan_id = None
 
-    def create_test_run(self, case_ids):
-        tz = timezone('US/Eastern')
-        time = datetime.now(tz).time().strftime("%I:%M %p")
+    def _get_time(self):
+        return datetime.now(timezone('US/Eastern')).time().strftime('%I:%M %p')
+
+    def _get_suite(self):
+        return self.client.send_get('get_suites/{}'.format(self.project_id))
+
+    def create_test_plan(self):
+        time = self._get_time()
         try:
-            run = self.client.send_post('add_run/{}'.format(self.project_id),
-                  {
-                      "name": "Automation Test Run {}".format(time),
-                      "include_all": False,
-                      "case_ids": case_ids
-                  }
+            plan = self.client.send_post('add_plan/{}'.format(self.project_id),
+                {
+                    "name": "Automation Test Plan - {}".format(time)
+                }
             )
-            return run['id']
+            self.plan_id = plan['id']
         except Exception as e:
-            logger.debug("Could not create TestRail test run \n" + str(e))
+            logger.debug("Could not create TestRail test plan \n" + str(e))
+
+    def create_test_run(self, case_ids, platform=None):
+        endpoint = None
+        time = self._get_time()
+        payload = {"include_all": False,
+                   "case_ids": case_ids}
+
+        if not platform:
+            endpoint = 'add_run/{}'.format(self.project_id)
+            payload.update({"name": "Automation Test Run {}".format(time)})
+            try:
+                run_id = self.client.send_post(endpoint, payload)['id']
+                self.runs.append(run_id)
+                return run_id
+            except Exception as e:
+                logger.debug("Could not create TestRail test run \n" + str(e))
+        else:
+            suite_id = self._get_suite()[0]['id']
+            endpoint = 'add_plan_entry/{}'.format(self.plan_id)
+            payload.update({"name": "Automation Test Run - {} - {}".format(
+                                                                    platform,
+                                                                    time),
+                            "suite_id": suite_id
+                            })
+            try:
+                run = self.client.send_post(endpoint, payload)
+                run_data = dict(run_id=run['runs'][0]['id'], platform=platform)
+                self.runs.append(run_data)
+                return run_data
+            except Exception as e:
+                logger.debug("Could not create TestRail test run \n" + str(e))
 
     # add test case results to test run
     def send_results(self):
         self.store_json_results(self.run_results)
         try:
-            run = self.client.send_post('add_results_for_cases/{}'
-                      .format(self.run_id),
-                      { "results": self.run_results }
-            )
+            for r in self.runs:
+                run = self.client.send_post('add_results_for_cases/{}'
+                                            .format(r['run_id']),
+                                            {'results': self.run_results}
+                                            )
         except Exception as e:
             logger.debug("Could not send TestRail results \n" + str(e))
 
     # add individual test case result to test run
-    def send_result(self, case_id, status_id, comment=None):
+    def send_result(self, run_id, case_id, status_id, comment=None):
         result = {
             "status_id": status_id,
             "comment": comment
@@ -52,7 +88,7 @@ class TestRailHelper(object):
         self.store_json_results(result, case_id)
         try:
             run = self.client.send_post('add_result_for_case/{}/{}'
-                                        .format(self.run_id, case_id), result)
+                                        .format(run_id, case_id), result)
         except Exception as e:
             logger.debug("Could not send TestRail results \n" + str(e))
 
