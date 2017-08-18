@@ -120,7 +120,6 @@ class RemoteBrowserFactory(BrowserFactory):
                         'deviceName': test.context['deviceName'],
                         'platformVersion': test.context['platformVersion'],
                         'platformName': test.context['platformName'],
-                        'browserName': test.context['browserName'],
                         'newCommandTimeout': test.context['newCommandTimeout']}
             if self.capabilities['platformName'] is 'Android':
                 self.capabilities.update({
