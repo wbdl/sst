@@ -83,7 +83,11 @@ class RemoteBrowserFactory(BrowserFactory):
                 self.remote_client = SauceLabs(creds.USERNAME,
                                                creds.ACCESS_KEY,
                                                creds.URL)
-                self.browsers = creds.BROWSERS
+                try:
+                    self.browsers = creds.BROWSERS
+                except AttributeError:
+                    self.browsers = creds.CAPABILITIES
+                    self.webdriver_class = appium.webdriver.Remote
                 self.remote_url = self.remote_client.URL
                 logger.debug('Connecting to SauceLabs instance: {}'
                              .format(self.remote_url))
@@ -98,13 +102,30 @@ class RemoteBrowserFactory(BrowserFactory):
             self.remote_url = remote_url
 
     def setup_for_test(self, test):
-        self.capabilities = {'platform': test.context['platform'],
-                             'browserName': test.context['browserName'],
-                             'version': test.context['version'],
-                             'screenResolution': test.context['screenResolution'],
-                             'idleTimeout': 300}
-        if 'chromeOptions' in test.context:
-            self.capabilities['chromeOptions'] = test.context['chromeOptions']
+        if self.webdriver_class is webdriver.Remote:
+            self.capabilities = {
+                        'platform': test.context['platform'],
+                        'browserName': test.context['browserName'],
+                        'version': test.context['version'],
+                        'screenResolution': test.context['screenResolution'],
+                        'idleTimeout': 300}
+            if 'chromeOptions' in test.context:
+                self.capabilities.update({
+                        'chromeOptions': test.context['chromeOptions']})
+
+        elif self.webdriver_class is appium.webdriver.Remote:
+            self.capabilities = {
+                        'app': test.context['app'],
+                        'appiumVersion': test.context['appiumVersion'],
+                        'deviceName': test.context['deviceName'],
+                        'platformVersion': test.context['platformVersion'],
+                        'platformName': test.context['platformName'],
+                        'browserName': test.context['browserName'],
+                        'newCommandTimeout': test.context['newCommandTimeout']}
+            if self.capabilities['platformName'] is 'Android':
+                self.capabilities.update({
+                        'appPackage': test.context['appPackage'],
+                        'appActivity': test.context['appActivity']})
 
         logger.debug('Remote capabilities set: {}'.format(self.capabilities))
 
