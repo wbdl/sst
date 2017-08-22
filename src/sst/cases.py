@@ -134,7 +134,6 @@ class SSTTestCase(testtools.TestCase):
             except exceptions.WebDriverException:
                 if nb_attempts >= max_attempts:
                     raise
-        import pdb; pdb.set_trace()
         try:
             logger.debug('Browser started: %s' % self.browser.name)
         except KeyError:
