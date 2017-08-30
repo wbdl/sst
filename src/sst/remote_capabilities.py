@@ -23,6 +23,7 @@ import sauceclient
 
 logger = logging.getLogger('SST')
 
+
 class SauceLabs(object):
     """Helper class for creating an instance of sauceclient and posting results.
     Credentials should be defined in the directory where your tests
@@ -38,5 +39,7 @@ class SauceLabs(object):
 
     def send_result(self, session_id, name, result):
         logger.debug('Sending result to SauceLabs')
+        print('SauceOnDemandSessionID={} job-name={}'.format(session_id,
+                                                             name))
         self.client.jobs.update_job(job_id=session_id, name=name,
                                     passed=result)
