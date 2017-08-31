@@ -39,7 +39,7 @@ class SauceLabs(object):
 
     def send_result(self, session_id, name, result):
         logger.debug('Sending result to SauceLabs')
-        print('SauceOnDemandSessionID={} job-name={}'.format(session_id,
-                                                             name))
+        logger.debug('SauceOnDemandSessionID={} job-name={}'.format(session_id,
+                                                                    name))
         self.client.jobs.update_job(job_id=session_id, name=name,
                                     passed=result)
