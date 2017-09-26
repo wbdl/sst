@@ -102,7 +102,7 @@ class RemoteBrowserFactory(BrowserFactory):
             self.remote_url = remote_url
 
     def setup_for_test(self, test):
-        if self.webdriver_class is webdriver.Remote:
+        if self.webdriver_class == webdriver.Remote:
             self.capabilities = {
                         'platform': test.context['platform'],
                         'browserName': test.context['browserName'],
@@ -113,7 +113,7 @@ class RemoteBrowserFactory(BrowserFactory):
                 self.capabilities.update({
                         'chromeOptions': test.context['chromeOptions']})
 
-        elif self.webdriver_class is appium.webdriver.Remote:
+        elif self.webdriver_class == appium.webdriver.Remote:
             self.capabilities = {
                         'app': test.context['app'],
                         'appiumVersion': test.context['appiumVersion'],
@@ -121,7 +121,7 @@ class RemoteBrowserFactory(BrowserFactory):
                         'platformVersion': test.context['platformVersion'],
                         'platformName': test.context['platformName'],
                         'newCommandTimeout': test.context['newCommandTimeout']}
-            if self.capabilities['platformName'] is 'Android':
+            if self.capabilities['platformName'] == 'Android':
                 self.capabilities.update({
                         'appPackage': test.context['appPackage'],
                         'appActivity': test.context['appActivity']})
