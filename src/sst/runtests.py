@@ -98,17 +98,24 @@ def runtests(test_regexps, results_directory, out,
             for browser in browser_factory.browsers:
                 tests = [t.case_id for t in alltests._tests if t.case_id]
                 ids = list(OrderedDict.fromkeys(tests))
-
-                platform_string = '{} - {} - {}'.format(browser['platform'],
-                                                        browser['browserName'],
-                                                        browser['version'])
+                try:
+                    browser_name = 'browserName'
+                    platform_string = '{} - {} - {}'.format(
+                                       browser['platform'],
+                                       browser[browser_name],
+                                       browser['version'])
+                except KeyError:
+                    browser_name = 'deviceName'
+                    platform_string = '{} - {}'.format(
+                                       browser[browser_name],
+                                       browser['platformVersion'])
                 test_run = client.create_test_run(ids, platform_string)
                 logger.debug('Cases in current run ({}:{}): {}'.format(
-                              browser['browserName'],
+                              browser[browser_name],
                               test_run['run_id'],
                               ids))
                 for test in alltests._tests:
-                    if browser['browserName'] in test.context['browserName']:
+                    if browser[browser_name] in test.context[browser_name]:
                         test.run_id = test_run['run_id']
             logger.debug('Created test runs {} using the above cases'
                          .format(client.runs))
@@ -179,6 +186,9 @@ def set_client_credentials(client):
                                                            creds.project_id)
     elif client == 'saucelabs':
         return find_client_credentials('sauce_config')
+
+    elif client == 'appium':
+        return find_client_credentials('appium_config')
 
 def find_shared_directory(test_dir, shared_directory):
     """This function is responsible for finding the shared directory.

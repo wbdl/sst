@@ -134,7 +134,11 @@ class SSTTestCase(testtools.TestCase):
             except exceptions.WebDriverException:
                 if nb_attempts >= max_attempts:
                     raise
-        logger.debug('Browser started: %s' % self.browser.name)
+        try:
+            logger.debug('Browser started: %s' % self.browser.name)
+        except KeyError:
+            (logger.debug('Device started: %s' %
+                           self.browser.capabilities['desired']['deviceName']))
 
     def stop_browser(self):
         logger.debug('Stopping browser')
@@ -259,8 +263,13 @@ class SSTScriptTestCase(SSTTestCase):
         # Possibly inject parametrization from associated .csv file
         previous_context = context.store_context()
         self.addCleanup(context.restore_context, previous_context)
-        context.populate_context(self.context, self.script_path,
-                                 self.browser.name)
+        try:
+            context.populate_context(self.context, self.script_path,
+                                     self.browser.name)
+        except KeyError:
+            (context.populate_context(self.context, self.script_path,
+                                      self.browser
+                                      .capabilities['desired']['deviceName']))
 
     def _compile_script(self):
         self.script_path = os.path.join(self.script_dir, self.script_name)

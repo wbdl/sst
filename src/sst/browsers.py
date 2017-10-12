@@ -22,6 +22,7 @@ import platform
 import shutil
 import subprocess
 import time
+import appium
 
 from sst import config
 from sst.remote_capabilities import SauceLabs
@@ -82,7 +83,11 @@ class RemoteBrowserFactory(BrowserFactory):
                 self.remote_client = SauceLabs(creds.USERNAME,
                                                creds.ACCESS_KEY,
                                                creds.URL)
-                self.browsers = creds.BROWSERS
+                try:
+                    self.browsers = creds.BROWSERS
+                except AttributeError:
+                    self.browsers = creds.CAPABILITIES
+                    self.webdriver_class = appium.webdriver.Remote
                 self.remote_url = self.remote_client.URL
                 logger.debug('Connecting to SauceLabs instance: {}'
                              .format(self.remote_url))
@@ -97,13 +102,29 @@ class RemoteBrowserFactory(BrowserFactory):
             self.remote_url = remote_url
 
     def setup_for_test(self, test):
-        self.capabilities = {'platform': test.context['platform'],
-                             'browserName': test.context['browserName'],
-                             'version': test.context['version'],
-                             'screenResolution': test.context['screenResolution'],
-                             'idleTimeout': 300}
-        if 'chromeOptions' in test.context:
-            self.capabilities['chromeOptions'] = test.context['chromeOptions']
+        if self.webdriver_class == webdriver.Remote:
+            self.capabilities = {
+                        'platform': test.context['platform'],
+                        'browserName': test.context['browserName'],
+                        'version': test.context['version'],
+                        'screenResolution': test.context['screenResolution'],
+                        'idleTimeout': 300}
+            if 'chromeOptions' in test.context:
+                self.capabilities.update({
+                        'chromeOptions': test.context['chromeOptions']})
+
+        elif self.webdriver_class == appium.webdriver.Remote:
+            self.capabilities = {
+                        'app': test.context['app'],
+                        'appiumVersion': test.context['appiumVersion'],
+                        'deviceName': test.context['deviceName'],
+                        'platformVersion': test.context['platformVersion'],
+                        'platformName': test.context['platformName'],
+                        'newCommandTimeout': test.context['newCommandTimeout']}
+            if self.capabilities['platformName'] == 'Android':
+                self.capabilities.update({
+                        'appPackage': test.context['appPackage'],
+                        'appActivity': test.context['appActivity']})
 
         logger.debug('Remote capabilities set: {}'.format(self.capabilities))
 
@@ -133,6 +154,21 @@ class ChromeFactory(BrowserFactory):
 
     def browser(self):
         return self.webdriver_class(desired_capabilities=self.capabilities)
+
+
+class AppiumFactory(BrowserFactory):
+
+    webdriver_class = appium.webdriver.Remote
+
+    def setup_for_test(self, test):
+        from sst import runtests
+        creds = runtests.set_client_credentials('appium')
+        self.server, self.caps = creds.SERVER, creds.CAPABILITIES
+        logger.debug("Appium capabilities: {}".format(self.caps))
+
+    def browser(self):
+        return self.webdriver_class(self.server, self.caps)
+
 
 # MISSINGTEST: Exercise this class (requires windows) -- vila 2013-04-11
 class IeFactory(BrowserFactory):
@@ -272,4 +308,5 @@ browser_factories = {
     'Ie': IeFactory,
     'Opera': OperaFactory,
     'PhantomJS': PhantomJSFactory,
+    'Appium': AppiumFactory
 }
