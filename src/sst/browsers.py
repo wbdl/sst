@@ -34,7 +34,7 @@ from selenium.webdriver.firefox import (
     firefox_binary,
     webdriver as ff_webdriver,
 )
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver import ChromeOptions
 
 logger = logging.getLogger('SST')
 
@@ -138,15 +138,17 @@ class ChromeFactory(BrowserFactory):
     webdriver_class = webdriver.Chrome
 
     def setup_for_test(self, test):
-        chrome_options = Options()
+        chrome_options = ChromeOptions()
         chrome_options.add_argument("test-type")
         chrome_options.add_argument("disable-infobars")
         chrome_options.add_experimental_option('prefs', {
             'credentials_enable_service': False,
-            'profile': {
-                'password_manager_enabled': False
-            }
+            'profile.password_manager_enabled': False,
+            'profile.default_content_setting_values.plugins': 1,
+            'profile.content_settings.plugin_whitelist.adobe-flash-player': 1,
+            'profile.content_settings.exceptions.plugins.*,*.per_resource.adobe-flash-player': 1
         })
+
         if test.use_proxy:
             chrome_options.add_argument("--proxy-server={0}".format(test.proxy_address))
         self.capabilities = chrome_options.to_capabilities()
