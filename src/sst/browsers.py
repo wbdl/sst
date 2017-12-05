@@ -143,7 +143,7 @@ class ChromeFactory(BrowserFactory):
         chrome_options.add_argument("disable-infobars")
         chrome_options.add_experimental_option('prefs', {
             'credentials_enable_service': False,
-            'password_manager_enabled': False,
+            'profile.password_manager_enabled': False,
             'profile.default_content_setting_values.plugins': 1,
             'profile.content_settings.plugin_whitelist.adobe-flash-player': 1,
             'profile.content_settings.exceptions.plugins.*,*.per_resource.adobe-flash-player': 1
