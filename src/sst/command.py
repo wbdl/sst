@@ -65,7 +65,7 @@ def get_common_options():
                       default='console',
                       help='report type: xml')
     parser.add_option('-b', dest='browser_type',
-                      default='Firefox',
+                      default='Chrome',
                       help=('select webdriver (Firefox, Chrome, '
                             'PhantomJS, etc)'))
     parser.add_option('-m', dest='shared_directory',
