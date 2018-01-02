@@ -1460,9 +1460,15 @@ def _alert_action(action, expected_text=None, text_to_write=None):
         if an unknown action is passed.
 
     """
-    wait_for(_test.browser.switch_to_alert)
-    alert = _test.browser.switch_to_alert()
-    alert_text = alert.text
+    try:
+        alert = (WebDriverWait(_test.browser,
+                               _TIMEOUT,
+                               poll_frequency=_POLL)
+                               .until(EC.alert_is_present()))
+        alert_text = alert.text
+    except TimeoutException:
+        logger.debug('No alert found.')
+        pass
     if expected_text and expected_text != alert_text:
         error_message = 'Element text should be %r. It is %r.' \
             % (expected_text, alert_text)
