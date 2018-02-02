@@ -1846,10 +1846,9 @@ def poll_for_staleness(id_or_elem, wait=10, frequency=1):
 
     """
     elem = _get_elem(id_or_elem)
-    elem_string = _element_to_string(elem)
     try:
         logger.debug('Waiting for element to be removed from DOM: {}'
-                     .format(elem_string))
+                     .format(elem))
         return (WebDriverWait(_test.browser, wait, poll_frequency=frequency)
                .until(EC.staleness_of(elem)))
     except TimeoutException:
