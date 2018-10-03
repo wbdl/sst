@@ -108,6 +108,7 @@ class RemoteBrowserFactory(BrowserFactory):
                         'browserName': test.context['browserName'],
                         'version': test.context['version'],
                         'screenResolution': test.context['screenResolution'],
+                        'extendedDebugging': True,
                         'idleTimeout': 300}
             if 'chromeOptions' in test.context:
                 self.capabilities.update({
