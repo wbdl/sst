@@ -85,10 +85,12 @@ class RemoteBrowserFactory(BrowserFactory):
                                                creds.URL)
                 try:
                     self.browsers = creds.BROWSERS
+                    self.remote_url = self.remote_client.URL
                 except AttributeError:
-                    self.browsers = creds.CAPABILITIES
+                    self.browsers = creds.DEVICES
+                    self.remote_url = creds.APPIUM_URL
                     self.webdriver_class = appium.webdriver.Remote
-                self.remote_url = self.remote_client.URL
+
                 logger.debug('Connecting to SauceLabs instance: {}'
                              .format(self.remote_url))
             except:
@@ -102,32 +104,36 @@ class RemoteBrowserFactory(BrowserFactory):
             self.remote_url = remote_url
 
     def setup_for_test(self, test):
+        self.capabilities = {}
         if self.webdriver_class == webdriver.Remote:
             self.capabilities = {
-                        'platform': test.context['platform'],
-                        'browserName': test.context['browserName'],
-                        'version': test.context['version'],
-                        'screenResolution': test.context['screenResolution'],
-                        'extendedDebugging': True,
-                        'idleTimeout': 300}
+                'platform': test.context['platform'],
+                'browserName': test.context['browserName'],
+                'version': test.context['version'],
+                'screenResolution': test.context['screenResolution'],
+                'extendedDebugging': True,
+                'idleTimeout': 300}
             if 'chromeOptions' in test.context:
                 self.capabilities.update({
                         'chromeOptions': test.context['chromeOptions']})
 
         elif self.webdriver_class == appium.webdriver.Remote:
-            self.capabilities = {
-                        'app': test.context['app'],
-                        'appiumVersion': test.context['appiumVersion'],
-                        'deviceName': test.context['deviceName'],
-                        'platformVersion': test.context['platformVersion'],
-                        'platformName': test.context['platformName'],
-                        'newCommandTimeout': test.context['newCommandTimeout']}
-            if self.capabilities['platformName'] == 'Android':
-                self.capabilities.update({
-                        'appPackage': test.context['appPackage'],
-                        'appActivity': test.context['appActivity']})
+            self.capabilities.update({
+                'testobject_api_key': test.context['testobject_api_key'],
+                'testobject_app_id': test.context['testobject_app_id'],
+                'platformName': test.context['platformName'],
+                'appiumVersion': test.context['appiumVersion'],
+                'deviceName': test.context['deviceName'],
+                'deviceOrientation': test.context['deviceOrientation'],
+                'automationName': test.context['automationName'],
+                'platformVersion': test.context['platformVersion'],
+                'app': test.context['app'],
+                'appPackage': test.context['appPackage'],
+                'appActivity': test.context['appActivity']
+            })
 
-        logger.debug('Remote capabilities set: {}'.format(self.capabilities))
+        logger.debug('{} capabilities set: {}'.format(self.webdriver_class,
+                                                      self.capabilities))
 
     def browser(self):
         return self.webdriver_class(self.remote_url, self.capabilities)
