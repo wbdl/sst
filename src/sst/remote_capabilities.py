@@ -43,3 +43,11 @@ class SauceLabs(object):
                                                                     name))
         self.client.jobs.update_job(job_id=session_id, name=name,
                                     passed=result)
+    def stop(self, session_id):
+        logger.debug('Stopping job: {}'.format(session_id))
+        self.client.jobs.stop_job(session_id)
+
+    def get_last_job(self):
+        session_id = self.client.jobs.get_jobs()[0]['id']
+        logger.debug('Most recent job id: {}'.format(session_id))
+        return session_id
