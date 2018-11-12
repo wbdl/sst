@@ -130,8 +130,13 @@ class RemoteBrowserFactory(BrowserFactory):
         logger.debug('Remote capabilities set: {}'.format(self.capabilities))
 
     def browser(self):
-        return self.webdriver_class(self.remote_url, self.capabilities)
-
+        try:
+            return self.webdriver_class(self.remote_url, self.capabilities)
+        except:
+            self.remote_client.stop(self.remote_client.get_last_job())
+            raise selenium_exceptions.WebDriverException(
+                'The remote browser could not be started.'
+                'Check https://status.saucelabs.com/')
 
 # MISSINGTEST: Exercise this class -- vila 2013-04-11
 class ChromeFactory(BrowserFactory):
