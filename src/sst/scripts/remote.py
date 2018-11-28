@@ -63,7 +63,8 @@ def main():
         concurrency_num=cmd_opts.concurrency,
         # FIXME: not tested -- vila 2013-05-23
         excludes=cmd_opts.excludes,
-        api_test_results=cmd_opts.api_test_results
+        api_test_results=cmd_opts.api_test_results,
+        use_proxy=cmd_opts.use_proxy
     )
 
 
