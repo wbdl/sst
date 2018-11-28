@@ -43,7 +43,8 @@ class Proxy(object):
                     self.set_blacklist(proxy_config.blacklist)
                 if proxy_config.headers:
                     self.set_headers(proxy_config.headers)
-            self.proxy.new_har(self.test_id, options=dict(captureHeaders=True))
+            self.proxy.new_har(self.test_id, options=dict(captureHeaders=True,
+                                                          captureContent=True))
             logger.debug('Browsermob proxy started.')
             return self
 
