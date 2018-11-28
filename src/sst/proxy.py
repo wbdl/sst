@@ -36,9 +36,14 @@ class Proxy(object):
             self.proxy_server = Server(config.proxy_bin)
             self.proxy_server.start()
             self.proxy = self.proxy_server.create_proxy()
-            if config.blacklist:
-                self.set_blacklist(config.blacklist)
-            self.proxy.new_har(self.test_id)
+            from sst import runtests
+            proxy_config = runtests.set_client_credentials('proxy')
+            if proxy_config:
+                if proxy_config.blacklist:
+                    self.set_blacklist(proxy_config.blacklist)
+                if proxy_config.headers:
+                    self.set_headers(proxy_config.headers)
+            self.proxy.new_har(self.test_id, options=dict(captureHeaders=True))
             logger.debug('Browsermob proxy started.')
             return self
 
@@ -57,8 +62,15 @@ class Proxy(object):
             for domain in domain_list:
                 self.proxy.blacklist("^https?://([a-z0-9-]+[.])*{}*.*"
                                      .format(domain), 404)
-            logger.debug("Proxy blacklist set.")
+            logger.debug('Proxy blacklist set.')
 
         def get_blacklist(self):
             return requests.get('{}{}/blacklist'
                                 .format(config.proxy_api, self.proxy.port))
+
+        def set_headers(self, headers):
+            request = requests.post('{}{}/headers'
+                                    .format(config.proxy_api, self.proxy.port),
+                                    json.dumps(headers))
+            if not request.raise_for_status():
+                logger.debug('Proxy headers set: %s', headers)
