@@ -3,7 +3,7 @@
 BrowserMob Proxy allows you to manipulate HTTP requests and responses, capture HTTP content, and export performance data as a [HAR file](http://www.softwareishard.com/blog/har-12-spec/).
 BMP works well as a standalone proxy server, but it is especially useful when embedded in Selenium tests.
 
-The latest version of BrowserMob Proxy is 2.1.2, powered by [LittleProxy](https://github.com/adamfisk/LittleProxy).
+The latest version of BrowserMob Proxy is 2.1.4, powered by [LittleProxy](https://github.com/adamfisk/LittleProxy).
 
 If you're running BrowserMob Proxy within a Java application or Selenium test, get started with [Embedded Mode](#getting-started-embedded-mode). If you want to run BMP from the
 command line as a standalone proxy, start with [Standalone](#getting-started-standalone).
@@ -14,7 +14,7 @@ To use BrowserMob Proxy in your tests or application, add the `browsermob-core` 
     <dependency>
         <groupId>net.lightbody.bmp</groupId>
         <artifactId>browsermob-core</artifactId>
-        <version>2.1.2</version>
+        <version>2.1.4</version>
         <scope>test</scope>
     </dependency>
 ```
@@ -48,23 +48,6 @@ Then create a proxy server instance:
 The "port" is the port of the newly-created proxy instance, so configure your HTTP client or web browser to use a proxy on the returned port.
 For more information on the features available in the REST API, see [the REST API documentation](#rest-api).
 
-## Changes since the 2.1-beta series
-
-**The `browsermob-core-littleproxy` module is now `browsermob-core`**
-
-After six beta releases, the LittleProxy implementation now supports more features and is more stable than the legacy implementation. To reflect that level of maturity and long-term support, the `browsermob-core` module now uses LittleProxy by default.
-
-**Note about Legacy support**: In the 2.1-betas, if you were using the `ProxyServer` or `LegacyProxyServer` classes, use the `browsermob-core-legacy` module in 2.1.0 and higher.
-
-*LittleProxy support for `LegacyProxyServer` has moved to `BrowserMobProxyServerLegacyAdapter`*. Using the LittleProxy implementation with the `LegacyProxyServer` interface is still fully supported as a means to help you transition from 2.0.0. Unlike the 2.1-beta series, the `BrowserMobProxyServer` class
-no longer implements `LegacyProxyServer`; however, the `BrowserMobProxyServerLegacyAdapter` can be used to integrate legacy code with the new LittleProxy interface. You must still use the `browsermob-core-legacy` module when using the LegacyAdapter.
-
-```java
-   LegacyProxyServer proxy = new BrowserMobProxyServerLegacyAdapter();
-   proxy.setPort(8081); // method only supported by the legacy interface
-   proxy.start();
-```
-
 ## Changes since 2.0.0
 
 The new [BrowserMobProxyServer class](browsermob-core/src/main/java/net/lightbody/bmp/BrowserMobProxyServer.java) has replaced the legacy ProxyServer implementation. The legacy implementation is no longer actively supported; all new code should use `BrowserMobProxyServer`. We highly recommend that existing code migrate to the new implementation.
@@ -91,12 +74,12 @@ The legacy interface, implicitly defined by the ProxyServer class, has been extr
     proxyServer.start();
     // [...]
 
-    // To use the LittleProxy-powered 2.1.2 release, simply change to
+    // To use the LittleProxy-powered 2.1.4 release, simply change to
     // the LegacyProxyServer interface and the adapter for the new
     // LittleProxy-based implementation:
     LegacyProxyServer proxyServer = new BrowserMobProxyServerLegacyAdapter();
     proxyServer.start();
-    // Almost all deprecated 2.0.0 methods are supported by the 
+    // Almost all deprecated 2.0.0 methods are supported by the
     // new BrowserMobProxyServerLegacyAdapter implementation, so in most cases,
     // no further code changes are necessary
 ```
@@ -118,7 +101,7 @@ The proxy is programmatically controlled via a REST interface or by being embedd
 
 ### REST API
 
-**New in 2.1:** The REST API now supports LittleProxy. As of 2.1.0-beta-3, LittleProxy is the default implementation. (You may specify `--use-littleproxy false` to disable LittleProxy in favor of the legacy Jetty 5-based implementation.)
+**New in 2.1:** LittleProxy is the default implementation of the REST API. You may specify `--use-littleproxy false` to disable LittleProxy in favor of the legacy Jetty 5-based implementation.
 
 To get started, first start the proxy by running `browsermob-proxy` or `browsermob-proxy.bat` in the bin directory:
 
@@ -147,8 +130,9 @@ Once that is done, a new proxy will be available on the port returned. All you h
 
 Description |  HTTP method | Request path | Request parameters
 --- | :---: | :---: | ---
-Get a list of ports attached to `ProxyServer` instances managed by `ProxyManager` | GET | */proxy* || 
-<a name="harcreate">Creates a new HAR</a> attached to the proxy and returns the HAR content if there was a previous HAR. *[port]* in request path it is port where your proxy was started | PUT |*/proxy/[port]/har* |<p>*captureHeaders* - Boolean, capture headers or not. Optional, default to "false".</p><p>*captureContent* - Boolean, capture content bodies or not. Optional, default to "false".</p><p>*captureBinaryContent* - Boolean, capture binary content or not. Optional, default to "false".</p><p>*initialPageRef* - The string name of The first page ref that should be used in the HAR. Optional, default to "Page 1".</p><p>*initialPageTitle* - The title of first HAR page. Optional, default to *initialPageRef*.</p>
+Get a list of ports attached to `ProxyServer` instances managed by `ProxyManager` | GET | */proxy* ||
+Creates a new proxy to run requests off of | POST | */proxy* | <p>*port* - Integer, The specific port to start the proxy service on. Optional, default is generated and returned in response.</p><p>*proxyUsername* - String, The username to use to authenticate with the chained proxy. Optional, default to null.</p><p>*proxyPassword* - String, The password to use to authenticate with the chained proxy. Optional, default to null.</p><p>*bindAddress* - String, If running BrowserMob Proxy in a multi-homed environment, specify a desired bind address. Optional, default to "0.0.0.0".</p><p>*serverBindAddress* - String, If running BrowserMob Proxy in a multi-homed environment, specify a desired server bind address. Optional, default to "0.0.0.0".</p><p>*useEcc* - Boolean. True, Uses Elliptic Curve Cryptography for certificate impersonation. Optional, default to "false".</p><p>*trustAllServers* - Boolean. True, Disables verification of all upstream servers' SSL certificates. All upstream servers will be trusted, even if they do not present valid certificates signed by certification authorities in the JDK's trust store. Optional, default to "false".</p>| 
+<a name="harcreate">Creates a new HAR</a> attached to the proxy and returns the HAR content if there was a previous HAR. *[port]* in request path it is port where your proxy was started | PUT |*/proxy/[port]/har* |<p>*captureHeaders* - Boolean, capture headers or not. Optional, default to "false".</p><p>*captureCookies* - Boolean, capture cookies or not. Optional, default to "false".</p><p>*captureContent* - Boolean, capture content bodies or not. Optional, default to "false".</p><p>*captureBinaryContent* - Boolean, capture binary content or not. Optional, default to "false".</p><p>*initialPageRef* - The string name of The first page ref that should be used in the HAR. Optional, default to "Page 1".</p><p>*initialPageTitle* - The title of first HAR page. Optional, default to *initialPageRef*.</p>
 Starts a new page on the existing HAR. *[port]* in request path it is port where your proxy was started | PUT | */proxy/[port]/har/pageRef* |<p>*pageRef* - The string name of the first page ref that should be used in the HAR. Optional, default to "Page N" where N is the next page number.</p><p>*pageTitle* - The title of new HAR page. Optional, default to `pageRef`.</p>
 Shuts down the proxy and closes the port. *[port]* in request path it is port where your proxy was started | DELETE | */proxy/[port]* ||
 Returns the JSON/HAR content representing all the HTTP traffic passed through the proxy (provided you have already created the HAR with [this method](#harcreate)) | GET | */proxy/[port]/har* ||
@@ -170,11 +154,11 @@ Removes all URL redirection rules currently in effect | DELETE | */proxy/[port]/
 Setting the retry count | PUT | */proxy/[port]/retry* |<p>*retrycount* - The number of times a method will be retried.</p>|
 Empties the DNS cache | DELETE | */proxy/[port]/dns/cache* ||
 | [REST API interceptors with LittleProxy](#interceptorsRESTapiLP) |||
-|Describe your own request interception | POST | */proxy/[port]/filter/request* | A string wich determinates interceptor rules. See more [here](#interceptorsRESTapiLPRequestFilter) |
-|Describe your own response interception | POST | */proxy/[port]/filter/response* | A string wich determinates interceptor rules. See more [here](#interceptorsRESTapiLPResponseFilter) |
+|Describe your own request interception | POST | */proxy/[port]/filter/request* | A string which determinates interceptor rules. See more [here](#interceptorsRESTapiLPRequestFilter) |
+|Describe your own response interception | POST | */proxy/[port]/filter/response* | A string which determinates interceptor rules. See more [here](#interceptorsRESTapiLPResponseFilter) |
 | [REST API with Legacy interceptors](#interceptorsRESTapiLegacy) ||||
-|Describe your own request interception | POST | */proxy/[port]/interceptor/request* | A string wich determinates interceptor rules. See more [here](#interceptorsRESTapiLegacy) |
-|Describe your own response interception | POST | */proxy/[port]/interceptor/response* | A string wich determinates interceptor rules. See more [here](#interceptorsRESTapiLegacy) |
+|Describe your own request interception | POST | */proxy/[port]/interceptor/request* | A string which determinates interceptor rules. See more [here](#interceptorsRESTapiLegacy) |
+|Describe your own response interception | POST | */proxy/[port]/interceptor/response* | A string which determinates interceptor rules. See more [here](#interceptorsRESTapiLegacy) |
 
 For example, once you've started the proxy you can create a new HAR to start recording data like so:
 
@@ -221,7 +205,7 @@ If you're using Java and Selenium, the easiest way to get started is to embed th
     <dependency>
         <groupId>net.lightbody.bmp</groupId>
         <artifactId>browsermob-core</artifactId>
-        <version>2.1.2</version>
+        <version>2.1.4</version>
         <scope>test</scope>
     </dependency>
 ```
@@ -238,6 +222,8 @@ Once done, you can start a proxy using `net.lightbody.bmp.BrowserMobProxy`:
 Consult the Javadocs on the `net.lightbody.bmp.BrowserMobProxy` class for the full API.
 
 ### Using With Selenium
+
+**Selenium 3 users**: Due to a [geckodriver issue](https://github.com/mozilla/geckodriver/issues/97), Firefox 51 and lower do not properly support proxies with WebDriver's DesiredCapabilities. See [this answer](http://stackoverflow.com/a/41373808/4256475) for a suitable work-around.
 
 BrowserMob Proxy makes it easy to use a proxy in Selenium tests:
 ```java
@@ -306,7 +292,7 @@ For most use cases, including inspecting and modifying requests/responses, `addR
                 return null;
             }
         });
-        
+
         // responses are equally as simple:
         proxy.addResponseFilter(new ResponseFilter() {
             @Override
@@ -371,7 +357,7 @@ If you are using the legacy ProxyServer implementation, you can manipulate the r
 <a name="interceptorsRESTapiLegacy"></a>You can also POST a JavaScript payload to `/:port/interceptor/request` and `/:port/interceptor/response` using the REST interface. The functions will have a `request`/`response` variable, respectively, and a `har` variable (which may be null if a HAR isn't set up yet). The JavaScript code will be run by [Rhino](https://github.com/mozilla/rhino) and have access to the same Java API in the example above:
 
     [~]$ curl -X POST -H 'Content-Type: text/plain' -d 'request.getMethod().removeHeaders("User-Agent");' http://localhost:8080/proxy/8081/interceptor/request
-    
+
 Consult the Java API docs for more info.
 
 ### SSL Support
@@ -401,15 +387,15 @@ The BrowserMobProxyServer implementation uses native DNS resolution by default, 
 You'll need maven (`brew install maven` if you're on OS X):
 
     [~]$ mvn -DskipTests
-    
-You'll find the standalone BrowserMob Proxy distributable zip at `browsermob-dist/target/browsermob-proxy-2.1.3-SNAPSHOT-bin.zip`. Unzip the contents and run the `browsermob-proxy` or `browsermob-proxy.bat` files in the `bin` directory.
+
+You'll find the standalone BrowserMob Proxy distributable zip at `browsermob-dist/target/browsermob-proxy-2.1.5-SNAPSHOT-bin.zip`. Unzip the contents and run the `browsermob-proxy` or `browsermob-proxy.bat` files in the `bin` directory.
 
 When you build the latest code from source, you'll have access to the latest snapshot release. To use the SNAPSHOT version in your code, modify the version in your pom:
 ```xml
     <dependency>
         <groupId>net.lightbody.bmp</groupId>
         <artifactId>browsermob-core</artifactId>
-        <version>2.1.3-SNAPSHOT</version>
+        <version>2.1.5-SNAPSHOT</version>
         <scope>test</scope>
     </dependency>
 ```
