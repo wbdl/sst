@@ -68,7 +68,7 @@ params = dict(
     version=__version__,
     packages=PACKAGES,
     package_dir={'': 'src', },
-    package_data={'browsermob-proxy-2.1.2': ['browsermob-proxy-2.1.2/*']},
+    package_data={'browsermob-proxy-2.1.4': ['browsermob-proxy-2.1.4/*']},
     include_package_data=True,
     install_requires=REQUIREMENTS,
 

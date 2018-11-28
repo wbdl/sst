@@ -3,7 +3,7 @@ python-subunit
 selenium==3.141.0
 Appium-Python-Client==0.24
 testtools==1.8.0
-browsermob-proxy==0.7.1
+browsermob-proxy==0.8.0
 sauceclient==0.2.1
 pytz==2013.7
 enum34==1.1.6
