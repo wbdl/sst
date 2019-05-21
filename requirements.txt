@@ -1,6 +1,6 @@
 junitxml
 python-subunit
-urllib3==1.24
+urllib3==1.24.3
 selenium==3.141.0
 Appium-Python-Client==0.24
 testtools==1.8.0
