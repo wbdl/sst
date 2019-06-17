@@ -84,13 +84,13 @@ class RemoteBrowserFactory(BrowserFactory):
                 self.remote_client = SauceLabs(self.creds.USERNAME,
                                                self.creds.ACCESS_KEY,
                                                self.creds.URL)
-                try:
-                    self.browsers = self.creds.CAPABILITIES
-                    self.remote_url = self.remote_client.URL
-                except AttributeError:
+                if 'APPIUM_URL' in dir(self.creds):
                     self.browsers = self.creds.CAPABILITIES
                     self.remote_url = self.creds.APPIUM_URL
                     self.webdriver_class = appium.webdriver.Remote
+                else:
+                    self.browsers = self.creds.CAPABILITIES
+                    self.remote_url = self.remote_client.URL
 
                 logger.debug('Connecting to SauceLabs instance: {}'
                              .format(self.remote_url))
