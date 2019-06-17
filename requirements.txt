@@ -1,7 +1,7 @@
 junitxml
 python-subunit
 selenium==3.4.3
-Appium-Python-Client==0.24
+Appium-Python-Client==0.44
 testtools==1.8.0
 browsermob-proxy==0.7.1
 sauceclient==0.2.1
