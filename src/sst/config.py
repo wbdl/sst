@@ -54,6 +54,7 @@ shared_directory = None
 results_directory = None
 api_test_results = None
 api_client = None
+platform_config = None
 flags = []
 __args__ = {}
 cache = {}

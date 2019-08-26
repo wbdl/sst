@@ -42,6 +42,9 @@ def main():
     if cmd_opts.api_test_results:
         config.api_test_results = cmd_opts.api_test_results
 
+    if cmd_opts.platform_config:
+        config.platform_config = cmd_opts.platform_config
+
     browser_factory = browsers.RemoteBrowserFactory(
         {
             "browserName": cmd_opts.browser_type.lower(),
