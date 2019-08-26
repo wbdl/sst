@@ -171,11 +171,15 @@ def post_api_test_results():
         logger.debug("Could not send test results \n" + str(e))
 
 def find_client_credentials(module):
-    cwd = os.getcwd()
-    mod_path = os.path.join(cwd, '{}.py'.format(module))
-    if not os.path.isfile(mod_path):
-        mod_path = os.path.join(os.path.dirname(cwd), '{}.py'.format(module))
-    return imp.load_source(module, os.path.abspath(mod_path))
+    if config.platform_config:
+        path = os.path.realpath(config.platform_config)
+        return imp.load_source(os.path.basename(path), path)
+    else:
+        cwd = os.getcwd()
+        mod_path = os.path.join(cwd, '{}.py'.format(module))
+        if not os.path.isfile(mod_path):
+            mod_path = os.path.join(os.path.dirname(cwd), '{}.py'.format(module))
+        return imp.load_source(module, os.path.abspath(mod_path))
 
 def set_client_credentials(client):
     if client == 'testrail':
