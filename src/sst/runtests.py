@@ -172,8 +172,9 @@ def post_api_test_results():
 
 def find_client_credentials(module):
     if config.platform_config:
-        path = os.path.realpath(config.platform_config)
-        return imp.load_source(os.path.basename(path), path)
+        mod_path = os.path.realpath(config.platform_config)
+        module = os.path.basename(mod_path).strip('.py')
+        return imp.load_source(module, mod_path)
     else:
         cwd = os.getcwd()
         mod_path = os.path.join(cwd, '{}.py'.format(module))
