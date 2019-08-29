@@ -171,7 +171,7 @@ def post_api_test_results():
         logger.debug("Could not send test results \n" + str(e))
 
 def find_client_credentials(module):
-    if config.platform_config:
+    if module == 'sauce_config' and config.platform_config:
         mod_path = os.path.realpath(config.platform_config)
         module = os.path.basename(mod_path).strip('.py')
         return imp.load_source(module, mod_path)
