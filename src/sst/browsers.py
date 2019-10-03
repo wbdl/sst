@@ -113,6 +113,9 @@ class RemoteBrowserFactory(BrowserFactory):
             if 'chromeOptions' in test.context:
                 self.capabilities.update({
                         'chromeOptions': test.context['chromeOptions']})
+            elif 'moz:firefoxOptions' in test.context:
+                self.capabilities.update({
+                    'moz:firefoxOptions': test.context['moz:firefoxOptions']})
 
         elif self.webdriver_class == appium.webdriver.Remote:
             self.capabilities = {
