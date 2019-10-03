@@ -38,6 +38,7 @@ class SauceLabs(object):
         self.client = sauceclient.SauceClient(username, access_key,)
 
     def send_result(self, session_id, name, result):
+        import pdb;pdb.set_trace()
         logger.debug('Sending result to SauceLabs')
         logger.debug('SauceOnDemandSessionID={} job-name={}'.format(session_id,
                                                                     name))
