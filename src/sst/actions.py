@@ -57,6 +57,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import (
+    InvalidArgumentException,
     NoSuchAttributeException,
     NoSuchElementException,
     NoSuchFrameException,
@@ -1918,5 +1919,8 @@ def set_page_load_timeout(timeout):
     """Sets the maximum amount of time to wait for a page load to complete.
     :argument timeout: The amount of time to wait in seconds.
     """
-    _test.browser.set_page_load_timeout(timeout)
-    logger.debug('Set page load timeout to {} seconds.'.format(timeout))
+    try:
+        _test.browser.set_page_load_timeout(timeout)
+        logger.debug('Set page load timeout to {} seconds.'.format(timeout))
+    except InvalidArgumentException, e:
+        logger.debug('Could not set page load timeout. \n {}'.format(e))
