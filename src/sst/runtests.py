@@ -115,7 +115,7 @@ def runtests(test_regexps, results_directory, out,
                               test_run['run_id'],
                               ids))
                 for test in alltests._tests:
-                    if browser[browser_name] in test.context[browser_name]:
+                    if browser == test.context:
                         test.run_id = test_run['run_id']
             logger.debug('Created test runs {} using the above cases'
                          .format(client.runs))
