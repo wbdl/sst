@@ -110,8 +110,9 @@ def runtests(test_regexps, results_directory, out,
                                        browser[browser_name],
                                        browser['platformVersion'])
                 test_run = client.create_test_run(ids, platform_string)
-                logger.debug('Cases in current run ({}:{}): {}'.format(
+                logger.debug('Cases in current run ({} {}:{}): {}'.format(
                               browser[browser_name],
+                              browser['version'],
                               test_run['run_id'],
                               ids))
                 for test in alltests._tests:
