@@ -24,6 +24,19 @@ class TestRailHelper(object):
     def _get_suite(self):
         return self.client.send_get('get_suites/{}'.format(self.project_id))
 
+    def get_plan(self, plan_id):
+        return self.client.send_get('get_plan/{}'.format(plan_id))
+
+    def get_runs_in_plan(self, plan_id):
+        plan = self.get_plan(plan_id)
+        runs_list = []
+        try:
+            for entry in plan['entries']:
+                runs_list.append(entry['runs'][0])
+            return runs_list
+        except Exception as e:
+            logger.debug("Could not find test runs \n" + str(e))
+
     def create_test_plan(self):
         time = self._get_time()
         try:
