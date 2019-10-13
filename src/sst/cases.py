@@ -212,10 +212,9 @@ class SSTTestCase(testtools.TestCase):
     def post_remote_result(self):
         result = False if self.getDetails() else True
         if isinstance(self.remote_client, SauceLabs):
-            pass
-            #self.remote_client.send_result(session_id=self.browser.session_id,
-            #                               name=self.id(),
-            #                               result=result)
+            self.remote_client.send_result(session_id=self.browser.session_id,
+                                           name=self.id(),
+                                           result=result)
 
 class SSTScriptTestCase(SSTTestCase):
     """Test case used internally by sst-run and sst-remote."""
