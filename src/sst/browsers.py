@@ -114,7 +114,7 @@ class RemoteBrowserFactory(BrowserFactory):
                                                       self.capabilities))
 
     def browser(self):
-        return self.webdriver_class(self.remote_url, self.capabilities)
+        return self.webdriver_class(self.remote_url, self.capabilities[0])
 
 
 # MISSINGTEST: Exercise this class -- vila 2013-04-11
