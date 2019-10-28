@@ -94,33 +94,75 @@ def runtests(test_regexps, results_directory, out,
         set_client_credentials('testrail')
         client = config.api_client
         if browser_factory.remote_client:
-            client.create_test_plan()
-            for browser in browser_factory.browsers:
-                tests = [t.case_id for t in alltests._tests if t.case_id]
-                ids = list(OrderedDict.fromkeys(tests))
-                try:
-                    browser_name = 'browserName'
-                    platform_string = '{} - {} - {}'.format(
-                                       browser['platform'],
-                                       browser[browser_name],
-                                       browser['version'])
-                except KeyError:
-                    browser_name = 'deviceName'
-                    platform_string = '{} - {}'.format(
-                                       browser[browser_name],
-                                       browser['platformVersion'])
-                test_run = client.create_test_run(ids, platform_string)
-                logger.debug('Cases in current run ({} {}:{}): {}'.format(
-                              browser[browser_name],
-                              browser['version'],
-                              test_run['run_id'],
-                              ids))
+            if config.api_test_results == True:
+                client.create_test_plan()
+                for browser in browser_factory.browsers:
+                    tests = [t.case_id for t in alltests._tests if t.case_id]
+                    ids = list(OrderedDict.fromkeys(tests))
+                    try:
+                        browser_name = 'browserName'
+                        platform_string = '{} - {} - {}'.format(
+                                           browser['platform'],
+                                           browser[browser_name],
+                                           browser['version'])
+                    except KeyError:
+                        browser_name = 'deviceName'
+                        platform_string = '{} - {}'.format(
+                                           browser[browser_name],
+                                           browser['platformVersion'])
+
+                    test_run = client.create_test_run(ids, platform_string)
+                    logger.debug('Cases in current run ({} {}:{}): {}'.format(
+                                  browser[browser_name],
+                                  browser['version'],
+                                  test_run['run_id'],
+                                  ids))
+                    for test in alltests._tests:
+                        if browser == test.context:
+                            test.run_id = test_run['run_id']
+                    logger.debug('Created test runs {} using the above cases'
+                                 .format(client.runs))
+
+            elif type(config.api_test_results) == int:
+                plan_id = config.api_test_results
+                existing_runs = []
+                for browser in browser_factory.browsers:
+                    tests = [t.case_id for t in alltests._tests if t.case_id]
+                    ids = list(OrderedDict.fromkeys(tests))
+                    runs_list = client.get_runs_in_plan(plan_id)
+                    for test_run in runs_list:
+                        run_found = False
+                        if test_run['config']:
+                            run_config = test_run['config'].lower()
+                        else:
+                            run_config = test_run['name'].lower()
+                        if (browser['platform'].lower() in run_config) \
+                        and (browser['browserName'].lower() in run_config) \
+                        and (browser['version'].split('.')[0] in run_config):
+                            run_found = True
+                            existing_runs.append(test_run['id'])
+                    if not run_found:
+                        platform_string = '{} - {} - {}'.format(
+                                           browser['platform'],
+                                           browser['browserName'],
+                                           browser['version'])
+                        logger.debug("Could not find existing test run of matching capabilities: {}".format(platform_string))
+                        logger.debug("Creating new test run in plan {}".format(plan_id))
+                        # TODO create new test run within the provided plan ID
+                        # client.create_test_run(ids, platform_string)
                 for test in alltests._tests:
-                    if browser == test.context:
-                        test.run_id = test_run['run_id']
-            logger.debug('Created test runs {} using the above cases'
-                         .format(client.runs))
-        else:
+                    runs_list = client.get_runs_in_plan(plan_id)
+                    for test_run in runs_list:
+                        if test_run['config']:
+                            run_config = test_run['config'].lower()
+                        else:
+                            run_config = test_run['name'].lower()
+                        if (test.context['platform'].lower() in run_config) \
+                        and (test.context['browserName'].lower() in run_config) \
+                        and (test.context['version'].split('.')[0] in run_config):
+                            test.run_id = test_run['id']
+
+    else:
             tests = [t.case_id for t in alltests._tests if t.case_id]
             logger.debug('Cases in current run: {}'.format(tests))
             run_id = config.api_client.create_test_run(tests)
