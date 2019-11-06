@@ -47,6 +47,7 @@ class BrowserFactory(object):
 
     webdriver_class = None
     remote_client = None
+    creds = None
 
     def __init__(self):
         super(BrowserFactory, self).__init__()
@@ -78,17 +79,23 @@ class RemoteBrowserFactory(BrowserFactory):
         super(RemoteBrowserFactory, self).__init__()
         if 'saucelabs' in remote_url:
             from sst import runtests
-            creds = runtests.set_client_credentials('saucelabs')
+            self.creds = runtests.set_client_credentials('saucelabs')
             try:
-                self.remote_client = SauceLabs(creds.USERNAME,
-                                               creds.ACCESS_KEY,
-                                               creds.URL)
-                try:
-                    self.browsers = creds.BROWSERS
-                except AttributeError:
-                    self.browsers = creds.CAPABILITIES
+                self.browsers = self.creds.CAPABILITIES
+                apibase = None
+
+                if 'APPIUM_URL' in dir(self.creds):
+                    self.remote_url = self.creds.APPIUM_URL
                     self.webdriver_class = appium.webdriver.Remote
-                self.remote_url = self.remote_client.URL
+                    apibase = self.creds.API_BASE
+                else:
+                    self.remote_url = self.creds.URL
+
+                self.remote_client = SauceLabs(self.creds.USERNAME,
+                                               self.creds.ACCESS_KEY,
+                                               self.creds.URL,
+                                               apibase)
+
                 logger.debug('Connecting to SauceLabs instance: {}'
                              .format(self.remote_url))
             except:
@@ -118,17 +125,7 @@ class RemoteBrowserFactory(BrowserFactory):
                     'moz:firefoxOptions': test.context['moz:firefoxOptions']})
 
         elif self.webdriver_class == appium.webdriver.Remote:
-            self.capabilities = {
-                        'app': test.context['app'],
-                        'appiumVersion': test.context['appiumVersion'],
-                        'deviceName': test.context['deviceName'],
-                        'platformVersion': test.context['platformVersion'],
-                        'platformName': test.context['platformName'],
-                        'newCommandTimeout': test.context['newCommandTimeout']}
-            if self.capabilities['platformName'] == 'Android':
-                self.capabilities.update({
-                        'appPackage': test.context['appPackage'],
-                        'appActivity': test.context['appActivity']})
+            self.capabilities = self.creds.CAPABILITIES[0]
 
         logger.debug('Remote capabilities set: {}'.format(self.capabilities))
 
@@ -168,8 +165,8 @@ class AppiumFactory(BrowserFactory):
 
     def setup_for_test(self, test):
         from sst import runtests
-        creds = runtests.set_client_credentials('appium')
-        self.server, self.caps = creds.SERVER, creds.CAPABILITIES
+        self.creds = runtests.set_client_credentials('appium')
+        self.server, self.caps = self.creds.SERVER, self.creds.CAPABILITIES
         logger.debug("Appium capabilities: {}".format(self.caps))
 
     def browser(self):

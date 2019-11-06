@@ -217,8 +217,7 @@ class SSTestLoader(TestLoader):
             if self.browser_factory.remote_client:
                 for browser in self.browser_factory.browsers:
                     test = self.loadTestFromScript(dir_name,
-                                                   script_name,
-                                                   browser)
+                                                   script_name)
                     suite.addTest(test)
             else:
                 test = self.loadTestFromScript(dir_name, script_name)
