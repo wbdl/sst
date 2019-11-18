@@ -1,3 +1,4 @@
+setuptools==41.6.0
 junitxml
 python-subunit
 selenium==3.141.0
@@ -9,4 +10,3 @@ pytz==2013.7
 enum34==1.1.6
 urllib3==1.24.3
 python-dateutil
-setuptools==41.6.0
