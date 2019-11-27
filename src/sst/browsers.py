@@ -81,15 +81,15 @@ class RemoteBrowserFactory(BrowserFactory):
             from sst import runtests
             self.creds = runtests.set_client_credentials('saucelabs')
             try:
-                self.browsers = self.creds.CAPABILITIES
-                apibase = None
-
                 if 'APPIUM_URL' in dir(self.creds):
+                    self.browsers = self.creds.CAPABILITIES
                     self.remote_url = self.creds.APPIUM_URL
                     self.webdriver_class = appium.webdriver.Remote
                     apibase = self.creds.API_BASE
                 else:
+                    self.browsers = self.creds.BROWSERS
                     self.remote_url = self.creds.URL
+                    apibase = None
 
                 self.remote_client = SauceLabs(self.creds.USERNAME,
                                                self.creds.ACCESS_KEY,
