@@ -41,11 +41,15 @@ class SauceLabs(object):
             self.api_base = apibase
         self.client = sauceclient.SauceClient(username, access_key, apibase)
 
+    def update_job(self, session_id, name):
+        if not self.api_base:
+            self.client.jobs.update_job(job_id=session_id, name=name)
+
     def send_result(self, session_id, name, result):
         logger.debug('Sending result to SauceLabs')
         logger.debug('SauceOnDemandSessionID={} job-name={}'.format(session_id,
                                                                     name))
-        if 'testobject' in self.api_base:
+        if self.api_base and 'testobject' in self.api_base:
             self.send_result_testobject(session_id, result)
         else:
             self.client.jobs.update_job(job_id=session_id, name=name,
