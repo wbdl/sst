@@ -125,44 +125,42 @@ def runtests(test_regexps, results_directory, out,
 
             elif type(config.api_test_results) == int:
                 plan_id = config.api_test_results
+                runs_list = client.get_runs_in_plan(plan_id)
                 existing_runs = []
                 for browser in browser_factory.browsers:
-                    tests = [t.case_id for t in alltests._tests if t.case_id]
-                    ids = list(OrderedDict.fromkeys(tests))
-                    runs_list = client.get_runs_in_plan(plan_id)
+                    platform_string = "{} {}, {}".format(browser['browserName'],
+                        browser['version'].split('.')[0],
+                        browser['platform'].lower())
+                    run_found = False
                     for test_run in runs_list:
-                        run_found = False
                         if test_run['config']:
                             run_config = test_run['config'].lower()
                         else:
                             run_config = test_run['name'].lower()
-                        if (browser['platform'].lower() in run_config) \
-                        and (browser['browserName'].lower() in run_config) \
-                        and (browser['version'].split('.')[0] in run_config):
+                        if platform_string == run_config:
                             run_found = True
-                            existing_runs.append(test_run['id'])
+                            existing_runs.append(test_run)
+                            logger.debug("Found existing run for {}".format(platform_string))
                     if not run_found:
-                        platform_string = '{} - {} - {}'.format(
-                                           browser['platform'],
-                                           browser['browserName'],
-                                           browser['version'])
                         logger.debug("Could not find existing test run of matching capabilities: {}".format(platform_string))
-                        logger.debug("Creating new test run in plan {}".format(plan_id))
                         # TODO create new test run within the provided plan ID
+                        #logger.debug("Creating new test run in plan {}".format(plan_id))
                         # client.create_test_run(ids, platform_string)
-                for test in alltests._tests:
-                    runs_list = client.get_runs_in_plan(plan_id)
-                    for test_run in runs_list:
+                # add run_id to individual tests
+                for test_run in existing_runs:
+                    for test in alltests._tests:
+                        test_context = "{} {}, {}".format(
+                            test.context['browserName'].lower(),
+                            test.context['version'].split('.')[0],
+                            test.context['platform'].lower())
                         if test_run['config']:
                             run_config = test_run['config'].lower()
                         else:
                             run_config = test_run['name'].lower()
-                        if (test.context['platform'].lower() in run_config) \
-                        and (test.context['browserName'].lower() in run_config) \
-                        and (test.context['version'].split('.')[0] in run_config):
+                        if test_context == run_config:
                             test.run_id = test_run['id']
 
-    else:
+        else:
             tests = [t.case_id for t in alltests._tests if t.case_id]
             logger.debug('Cases in current run: {}'.format(tests))
             run_id = config.api_client.create_test_run(tests)
