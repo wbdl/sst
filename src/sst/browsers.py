@@ -126,6 +126,7 @@ class RemoteBrowserFactory(BrowserFactory):
 
         elif self.webdriver_class == appium.webdriver.Remote:
             self.capabilities = self.creds.CAPABILITIES[0]
+            self.capabilities['testobject_test_name'] = test.id().strip('.py')
 
         logger.debug('Remote capabilities set: {}'.format(self.capabilities))
 
