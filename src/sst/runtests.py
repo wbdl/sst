@@ -128,7 +128,8 @@ def runtests(test_regexps, results_directory, out,
                 runs_list = client.get_runs_in_plan(plan_id)
                 existing_runs = []
                 for browser in browser_factory.browsers:
-                    platform_string = "{} {}, {}".format(browser['browserName'],
+                    platform_string = "{} {}, {}".format(
+                        browser['browserName'].lower(),
                         browser['version'].split('.')[0],
                         browser['platform'].lower())
                     run_found = False
