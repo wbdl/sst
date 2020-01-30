@@ -29,10 +29,11 @@ class TestRailHelper(object):
 
     def get_runs_in_plan(self, plan_id):
         plan = self.get_plan(plan_id)
-        runs_list = []
         try:
+            runs_list = []
             for entry in plan['entries']:
-                runs_list.append(entry['runs'][0])
+                for run in entry['runs']:
+                    runs_list.append(run)
             return runs_list
         except Exception as e:
             logger.debug("Could not find test runs \n" + str(e))
@@ -99,6 +100,9 @@ class TestRailHelper(object):
             "comment": comment
         }
         self.store_json_results(result, case_id)
+        if not run_id:
+            logger.debug("Run ID does not exist")
+            return None
         try:
             run = self.client.send_post('add_result_for_case/{}/{}'
                                         .format(run_id, case_id), result)
