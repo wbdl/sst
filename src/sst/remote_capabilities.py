@@ -18,6 +18,8 @@
 #
 
 from builtins import object
+
+import json
 import logging
 import requests
 import sauceclient
@@ -32,15 +34,33 @@ class SauceLabs(object):
 
     client = None
     URL = None
+    api_base = None
 
-    def __init__(self, username, access_key, url):
+    def __init__(self, username, access_key, url, apibase=None):
         logger.debug('Creating SauceLabs client')
         self.URL = url
-        self.client = sauceclient.SauceClient(username, access_key,)
+        if apibase:
+            self.api_base = apibase
+        self.client = sauceclient.SauceClient(username, access_key, apibase)
+
+    def update_job(self, session_id, name):
+        if not self.api_base:
+            self.client.jobs.update_job(job_id=session_id, name=name)
 
     def send_result(self, session_id, name, result):
         logger.debug('Sending result to SauceLabs')
         logger.debug('SauceOnDemandSessionID={} job-name={}'.format(session_id,
                                                                     name))
-        self.client.jobs.update_job(job_id=session_id, name=name,
-                                    passed=result)
+        if self.api_base and 'testobject' in self.api_base:
+            self.send_result_testobject(session_id, result)
+        else:
+            self.client.jobs.update_job(job_id=session_id, name=name,
+                                        passed=result)
+
+    def send_result_testobject(self, session_id, result):
+        url = self.api_base + 'v2/appium/session/{}/test'.format(session_id)
+        headers = {"Content-Type": "application/json"}
+        result_dict = {"passed": result}
+        r = requests.put(url, headers=headers, data=json.dumps(result_dict))
+        if not r.raise_for_status():
+            logger.debug('Sent result to TestObject: {}'.format(result))

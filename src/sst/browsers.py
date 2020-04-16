@@ -49,6 +49,7 @@ class BrowserFactory(object):
 
     webdriver_class = None
     remote_client = None
+    creds = None
 
     def __init__(self):
         super(BrowserFactory, self).__init__()
@@ -80,17 +81,23 @@ class RemoteBrowserFactory(BrowserFactory):
         super(RemoteBrowserFactory, self).__init__()
         if 'saucelabs' in remote_url:
             from sst import runtests
-            creds = runtests.set_client_credentials('saucelabs')
+            self.creds = runtests.set_client_credentials('saucelabs')
             try:
-                self.remote_client = SauceLabs(creds.USERNAME,
-                                               creds.ACCESS_KEY,
-                                               creds.URL)
-                try:
-                    self.browsers = creds.BROWSERS
-                except AttributeError:
-                    self.browsers = creds.CAPABILITIES
+                if 'APPIUM_URL' in dir(self.creds):
+                    self.browsers = self.creds.CAPABILITIES
+                    self.remote_url = self.creds.APPIUM_URL
                     self.webdriver_class = appium.webdriver.Remote
-                self.remote_url = self.remote_client.URL
+                    apibase = self.creds.API_BASE
+                else:
+                    self.browsers = self.creds.BROWSERS
+                    self.remote_url = self.creds.URL
+                    apibase = None
+
+                self.remote_client = SauceLabs(self.creds.USERNAME,
+                                               self.creds.ACCESS_KEY,
+                                               self.creds.URL,
+                                               apibase)
+
                 logger.debug('Connecting to SauceLabs instance: {}'
                              .format(self.remote_url))
             except:
@@ -115,19 +122,13 @@ class RemoteBrowserFactory(BrowserFactory):
             if 'chromeOptions' in test.context:
                 self.capabilities.update({
                         'chromeOptions': test.context['chromeOptions']})
+            elif 'moz:firefoxOptions' in test.context:
+                self.capabilities.update({
+                    'moz:firefoxOptions': test.context['moz:firefoxOptions']})
 
         elif self.webdriver_class == appium.webdriver.Remote:
-            self.capabilities = {
-                        'app': test.context['app'],
-                        'appiumVersion': test.context['appiumVersion'],
-                        'deviceName': test.context['deviceName'],
-                        'platformVersion': test.context['platformVersion'],
-                        'platformName': test.context['platformName'],
-                        'newCommandTimeout': test.context['newCommandTimeout']}
-            if self.capabilities['platformName'] == 'Android':
-                self.capabilities.update({
-                        'appPackage': test.context['appPackage'],
-                        'appActivity': test.context['appActivity']})
+            self.capabilities = self.creds.CAPABILITIES[0]
+            self.capabilities['testobject_test_name'] = test.id()
 
         logger.debug('Remote capabilities set: {}'.format(self.capabilities))
 
@@ -167,8 +168,8 @@ class AppiumFactory(BrowserFactory):
 
     def setup_for_test(self, test):
         from sst import runtests
-        creds = runtests.set_client_credentials('appium')
-        self.server, self.caps = creds.SERVER, creds.CAPABILITIES
+        self.creds = runtests.set_client_credentials('appium')
+        self.server, self.caps = self.creds.SERVER, self.creds.CAPABILITIES
         logger.debug("Appium capabilities: {}".format(self.caps))
 
     def browser(self):
@@ -286,6 +287,7 @@ class FirefoxFactory(BrowserFactory):
 
     def setup_for_test(self, test):
         profile = webdriver.FirefoxProfile()
+        profile.set_preference('media.gmp-manager.updateEnabled', True)
         profile.set_preference('intl.accept_languages', 'en')
         profile.set_preference('browser.download.folderList', 1)
         profile.set_preference('browser.download.manager.showWhenStarting', False)

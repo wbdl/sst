@@ -100,6 +100,7 @@ class SSTTestCase(testtools.TestCase):
             self.addCleanup(self.post_api_test_result)
         if self.browser_factory.remote_client:
             self.remote_client = self.browser_factory.remote_client
+            self.update_remote_job()
             self.addCleanup(self.post_remote_result)
         if self.screenshots_on:
             self.addOnException(self.take_screenshot_and_page_dump)
@@ -214,6 +215,10 @@ class SSTTestCase(testtools.TestCase):
                     'comment': comment}
         logger.debug("Could not find case_id for {}".format(self.id()))
         return None
+
+    def update_remote_job(self):
+        self.remote_client.update_job(session_id=self.browser.session_id,
+                                      name = self.id())
 
     def post_remote_result(self):
         result = False if self.getDetails() else True
