@@ -17,6 +17,7 @@
 #   limitations under the License.
 #
 
+from builtins import str
 from testtools import testresult
 
 

@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 #
 #   Copyright (c) 2011,2012,2013 Canonical Ltd.
 #
@@ -17,6 +18,7 @@
 #   limitations under the License.
 #
 
+from builtins import str
 import imp
 import junitxml
 import logging
@@ -26,7 +28,7 @@ import sys
 import testtools
 
 from collections import OrderedDict
-from testrail_api.testrail import APIError
+from .testrail_api import *
 from sst import (
     browsers,
     cases,
@@ -110,13 +112,12 @@ def runtests(test_regexps, results_directory, out,
                                        browser[browser_name],
                                        browser['platformVersion'])
                 test_run = client.create_test_run(ids, platform_string)
-                logger.debug('Cases in current run ({} {}:{}): {}'.format(
+                logger.debug('Cases in current run ({}:{}): {}'.format(
                               browser[browser_name],
-                              browser['version'],
                               test_run['run_id'],
                               ids))
                 for test in alltests._tests:
-                    if browser == test.context:
+                    if browser[browser_name] in test.context[browser_name]:
                         test.run_id = test_run['run_id']
             logger.debug('Created test runs {} using the above cases'
                          .format(client.runs))
@@ -168,7 +169,7 @@ def post_api_test_results():
     logger.debug("Sending test run results")
     try:
         config.api_client.send_results()
-    except APIError, e:
+    except testrail_api as e:
         logger.debug("Could not send test results \n" + str(e))
 
 def find_client_credentials(module):

@@ -39,6 +39,9 @@ id, tag, text, class or other attributes. See the `get_element` documentation.
 
 """
 
+from builtins import str
+from builtins import zip
+from builtins import object
 import codecs
 import errno
 import logging
@@ -49,7 +52,7 @@ import time
 from datetime import datetime
 from functools import wraps
 from pdb import set_trace as debug
-from urlparse import urljoin, urlparse
+from  urllib.parse import urljoin, urlparse
 
 from selenium.webdriver.common import action_chains, keys
 from selenium.webdriver.common.by import By
@@ -569,7 +572,7 @@ def write_textfield(id_or_elem, new_text, check=True, clear=True):
             logger.debug(msg)
             textfield.clear()
 
-    if isinstance(new_text, unicode):
+    if isinstance(new_text, str):
         textfield.send_keys(new_text)
     else:
         textfield.send_keys(str(new_text))
@@ -1158,7 +1161,7 @@ def get_elements(tag=None, css_class=None, id=None, text=None,
         selector_string += ('#%s' % id)
 
     selector_string += ''.join(['[%s=%r]' % (key, value) for
-                                key, value in kwargs.items()])
+                                key, value in list(kwargs.items())])
     try:
         if text and not selector_string:
             elems = _test.browser.find_elements_by_xpath(
@@ -1922,5 +1925,5 @@ def set_page_load_timeout(timeout):
     try:
         _test.browser.set_page_load_timeout(timeout)
         logger.debug('Set page load timeout to {} seconds.'.format(timeout))
-    except InvalidArgumentException, e:
+    except InvalidArgumentException as e:
         logger.debug('Could not set page load timeout. \n {}'.format(e))
