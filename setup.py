@@ -39,10 +39,8 @@ LICENSE = 'Apache'
 readme = os.path.join(this_dir, 'README')
 LONG_DESCRIPTION = '\n%s' % open(readme).read()
 
-requirements_file = os.path.join(this_dir, 'requirements.txt')
-requirements = filter(None, open(requirements_file).read().splitlines())
-REQUIREMENTS = [req for req in requirements if 'git+git' not in req]
-REQUIREMENTS.append('sauceclient==1.0.1')
+requirements = os.path.join(this_dir, 'requirements.txt')
+REQUIREMENTS = [_f for _f in open(requirements).read().splitlines() if _f]
 
 CLASSIFIERS = [
     'Development Status :: 4 - Beta',
@@ -54,6 +52,7 @@ CLASSIFIERS = [
     'Programming Language :: Python :: 2',
     'Programming Language :: Python :: 2.6',
     'Programming Language :: Python :: 2.7',
+    'Programming Language :: Python :: 3.7',
     'Operating System :: OS Independent',
     'Topic :: Software Development :: Libraries',
     'Topic :: Software Development :: Libraries :: Python Modules',
@@ -73,7 +72,6 @@ params = dict(
     package_data={'browsermob-proxy-2.1.2': ['browsermob-proxy-2.1.2/*']},
     include_package_data=True,
     install_requires=REQUIREMENTS,
-    dependency_links=['git+https://github.com/cgoldberg/sauceclient@aa27b7d#egg=sauceclient-1.0.1'],
 
     # metadata for upload to PyPI
     author=AUTHOR,
