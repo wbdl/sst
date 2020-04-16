@@ -10,9 +10,12 @@
 # Copyright Gurock Software GmbH. See license.md for details.
 #
 
-import urllib2, json, base64
+from future import standard_library
+standard_library.install_aliases()
+from builtins import object
+import urllib.request, urllib.error, urllib.parse, json, base64
 
-class APIClient:
+class APIClient(object):
 	def __init__(self, base_url):
 		self.user = ''
 		self.password = ''
@@ -52,7 +55,7 @@ class APIClient:
 
 	def __send_request(self, method, uri, data):
 		url = self.__url + uri
-		request = urllib2.Request(url)
+		request = urllib.request.Request(url)
 		if (method == 'POST'):
 			request.add_data(json.dumps(data))
 		auth = base64.b64encode('%s:%s' % (self.user, self.password))
@@ -61,8 +64,8 @@ class APIClient:
 
 		e = None
 		try:
-			response = urllib2.urlopen(request).read()
-		except urllib2.HTTPError as e:
+			response = urllib.request.urlopen(request).read()
+		except urllib.error.HTTPError as e:
 			response = e.read()
 
 		if response:
