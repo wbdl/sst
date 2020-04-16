@@ -1,3 +1,4 @@
+from builtins import chr
 import sst
 import sst.actions
 from sst import config
@@ -20,7 +21,7 @@ sst.actions.write_textfield('text_1', u)
 sst.actions.assert_text('text_1', u)
 sst.actions.assert_text_contains('text_1', u)
 
-u = unichr(40960) + u'abcd' + unichr(1972)
+u = chr(40960) + u'abcd' + chr(1972)
 sst.actions.write_textfield('text_1', u)
 sst.actions.assert_text('text_1', u)
 sst.actions.assert_text_contains('text_1', u)
