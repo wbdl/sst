@@ -19,11 +19,15 @@
 #
 
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import range
 import os
 import subprocess
 import sys
 import time
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 import testtools
 
@@ -106,7 +110,7 @@ def run_django(port):
     attempts = 30
     for count in range(attempts):
         try:
-            resp = urllib.urlopen(url)
+            resp = urllib.request.urlopen(url)
             if resp.code == 200:
                 break
         except IOError:
@@ -119,7 +123,7 @@ def run_django(port):
 
 def kill_django(port):
     try:
-        urllib.urlopen('http://localhost:%s/kill_django' % port)
+        urllib.request.urlopen('http://localhost:%s/kill_django' % port)
     except IOError:
         pass
 
