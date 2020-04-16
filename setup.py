@@ -40,7 +40,7 @@ readme = os.path.join(this_dir, 'README')
 LONG_DESCRIPTION = '\n%s' % open(readme).read()
 
 requirements_file = os.path.join(this_dir, 'requirements.txt')
-requirements = [_f for _f in open(requirements_file).read().splitlines() if _f]
+requirements = filter(None, open(requirements_file).read().splitlines())
 REQUIREMENTS = [req for req in requirements if 'git+git' not in req]
 REQUIREMENTS.append('sauceclient==1.0.1')
 
