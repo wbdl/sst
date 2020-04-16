@@ -1,9 +1,13 @@
+from __future__ import absolute_import
+from builtins import str
+from builtins import range
+from builtins import object
 import json
 import logging
 from datetime import datetime
 from pytz import timezone
 from sst import config
-from testrail_api.testrail import *
+from .testrail_api import *
 
 logger = logging.getLogger('SST')
 
@@ -100,7 +104,7 @@ class TestRailHelper(object):
 
 class APITestStatus(object):
 
-    PASSED, BLOCKED, RETEST, RETEST, FAILED = range(1, 6)
+    PASSED, BLOCKED, RETEST, RETEST, FAILED = list(range(1, 6))
 
 
 FAILED_TEST_RESULT_STATUS = APITestStatus.FAILED

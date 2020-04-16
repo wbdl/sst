@@ -1,3 +1,4 @@
+from __future__ import division
 #
 #   Copyright (c) 2013 Canonical Ltd.
 #
@@ -17,7 +18,10 @@
 #   limitations under the License.
 #
 
-from cStringIO import StringIO
+from future import standard_library
+standard_library.install_aliases()
+from past.utils import old_div
+from io import StringIO
 import testtools
 
 from sst import command
@@ -93,7 +97,7 @@ class TestCleanups(testtools.TestCase):
         clean = command.Cleaner(out)
 
         def boom():
-            1 / 0
+            old_div(1, 0)
         clean.add('boom\n', boom)
         clean.cleanup_now()
         lines = out.getvalue().splitlines()

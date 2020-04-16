@@ -18,7 +18,9 @@
 #
 
 
-import cStringIO
+from future import standard_library
+standard_library.install_aliases()
+import io
 
 import mock
 import testtools
@@ -66,7 +68,7 @@ class TestHandleExceptions(testtools.TestCase):
             self.assertFalse(test.take_screenshot_and_page_dump.called)
 
     @mock.patch('pdb.post_mortem')
-    @mock.patch('sys.stderr', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stderr', new_callable=io.StringIO)
     def test_debug_post_mortem_enabled(self, mock_stderr, mock_post_mortem):
         test = self.get_handle_exceptions_test(with_debug_post_mortem=True)
         test.run()
@@ -84,7 +86,7 @@ class TestHandleExceptions(testtools.TestCase):
 
     def test_report_extensively_enabled(self):
         test = self.get_handle_exceptions_test(with_extended_report=True)
-        result = testtools.TextTestResult(cStringIO.StringIO())
+        result = testtools.TextTestResult(io.StringIO())
         result.startTestRun()
         test.run(result)
         result.stopTestRun()

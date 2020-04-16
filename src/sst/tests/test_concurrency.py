@@ -18,7 +18,10 @@
 #
 
 
-from cStringIO import StringIO
+from future import standard_library
+standard_library.install_aliases()
+from builtins import range
+from io import StringIO
 import os
 import signal
 import unittest
@@ -71,8 +74,8 @@ class TestConcurrentSuite(testtools.TestCase):
         self.assertEqual(0, len(res.errors))
         self.assertEqual(0, len(res.failures))
         reasons = res.skip_reasons
-        self.assertEqual(1, len(reasons.keys()))
-        reason, skipped = reasons.items()[0]
+        self.assertEqual(1, len(list(reasons.keys())))
+        reason, skipped = list(reasons.items())[0]
         self.assertEqual('', reason)
         self.assertEqual(1, len(skipped))
         self.assertEqual('sst.tests.Test.test_skip', skipped[0].id())
@@ -82,8 +85,8 @@ class TestConcurrentSuite(testtools.TestCase):
         self.assertEqual(0, len(res.errors))
         self.assertEqual(0, len(res.failures))
         reasons = res.skip_reasons
-        self.assertEqual(1, len(reasons.keys()))
-        reason, skipped = reasons.items()[0]
+        self.assertEqual(1, len(list(reasons.keys())))
+        reason, skipped = list(reasons.items())[0]
         self.assertEqual('Because', reason)
         self.assertEqual(1, len(skipped))
         self.assertEqual('sst.tests.Test.test_skip_reason', skipped[0].id())

@@ -31,6 +31,8 @@ concurrency.
 Unix only.
 """
 
+from builtins import zip
+from builtins import range
 import os
 import sys
 import traceback

@@ -17,6 +17,8 @@
 #   limitations under the License.
 #
 
+from builtins import range
+from builtins import object
 import logging
 import platform
 import shutil

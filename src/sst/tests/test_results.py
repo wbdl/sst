@@ -18,7 +18,9 @@
 #
 
 
-from cStringIO import StringIO
+from future import standard_library
+standard_library.install_aliases()
+from io import StringIO
 
 import junitxml
 import subunit

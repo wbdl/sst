@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 #
 #   Copyright (c) 2011,2012,2013 Canonical Ltd.
 #
@@ -17,6 +18,7 @@
 #   limitations under the License.
 #
 
+from builtins import str
 import imp
 import junitxml
 import logging
@@ -26,7 +28,7 @@ import sys
 import testtools
 
 from collections import OrderedDict
-from testrail_api.testrail import APIError
+from .testrail_api import *
 from sst import (
     browsers,
     cases,
@@ -167,7 +169,7 @@ def post_api_test_results():
     logger.debug("Sending test run results")
     try:
         config.api_client.send_results()
-    except APIError, e:
+    except testrail_api as e:
         logger.debug("Could not send test results \n" + str(e))
 
 def find_client_credentials(module):

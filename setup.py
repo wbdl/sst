@@ -40,7 +40,7 @@ readme = os.path.join(this_dir, 'README')
 LONG_DESCRIPTION = '\n%s' % open(readme).read()
 
 requirements = os.path.join(this_dir, 'requirements.txt')
-REQUIREMENTS = filter(None, open(requirements).read().splitlines())
+REQUIREMENTS = [_f for _f in open(requirements).read().splitlines() if _f]
 
 CLASSIFIERS = [
     'Development Status :: 4 - Beta',
@@ -52,6 +52,7 @@ CLASSIFIERS = [
     'Programming Language :: Python :: 2',
     'Programming Language :: Python :: 2.6',
     'Programming Language :: Python :: 2.7',
+    'Programming Language :: Python :: 3.7',
     'Operating System :: OS Independent',
     'Topic :: Software Development :: Libraries',
     'Topic :: Software Development :: Libraries :: Python Modules',
