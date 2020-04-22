@@ -17,6 +17,7 @@
 #   limitations under the License.
 #
 
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import json
 import logging
 import requests
@@ -24,6 +25,7 @@ import sauceclient
 
 logger = logging.getLogger('SST')
 
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 class SauceLabs(object):
     """Helper class for creating an instance of sauceclient and posting results.

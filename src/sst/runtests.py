@@ -98,21 +98,24 @@ def runtests(test_regexps, results_directory, out,
             for browser in browser_factory.browsers:
                 tests = [t.case_id for t in alltests._tests if t.case_id]
                 ids = list(OrderedDict.fromkeys(tests))
-                try:
-                    browser_name = 'browserName'
-                    platform_string = '{} - {} - {}'.format(
-                                       browser['platform'],
-                                       browser[browser_name],
-                                       browser['version'])
-                except KeyError:
-                    browser_name = 'deviceName'
-                    platform_string = '{} - {}'.format(
-                                       browser[browser_name],
-                                       browser['platformVersion'])
+                # web
+                if 'browserName' in browser.keys():
+                    platform = 'platform'
+                    version = 'version'
+                    name = 'browserName'
+                # app
+                else:
+                    platform = 'platformName'
+                    version = 'platformVersion'
+                    name = 'deviceName'
+                platform_string = '{} - {} - {}'.format(
+                    browser[platform],
+                    browser[name],
+                    browser[version])
                 test_run = client.create_test_run(ids, platform_string)
                 logger.debug('Cases in current run ({} {}:{}): {}'.format(
-                              browser[browser_name],
-                              browser['version'],
+                              browser[name],
+                              browser[version],
                               test_run['run_id'],
                               ids))
                 for test in alltests._tests:
