@@ -99,22 +99,24 @@ def runtests(test_regexps, results_directory, out,
                 for browser in browser_factory.browsers:
                     tests = [t.case_id for t in alltests._tests if t.case_id]
                     ids = list(OrderedDict.fromkeys(tests))
-                    try:
-                        browser_name = 'browserName'
-                        platform_string = '{} - {} - {}'.format(
-                                           browser['platform'],
-                                           browser[browser_name],
-                                           browser['version'])
-                    except KeyError:
-                        browser_name = 'deviceName'
-                        platform_string = '{} - {}'.format(
-                                           browser[browser_name],
-                                           browser['platformVersion'])
-
+                    # web
+                    if 'browserName' in browser.keys():
+                        platform = 'platform'
+                        version = 'version'
+                        name = 'browserName'
+                    # app
+                    else:
+                        platform = 'platformName'
+                        version = 'platformVersion'
+                        name = 'deviceName'
+                    platform_string = '{} - {} - {}'.format(
+                        browser[platform],
+                        browser[name],
+                        browser[version])
                     test_run = client.create_test_run(ids, platform_string)
                     logger.debug('Cases in current run ({} {}:{}): {}'.format(
-                                  browser[browser_name],
-                                  browser['version'],
+                                  browser[name],
+                                  browser[version],
                                   test_run['run_id'],
                                   ids))
                     for test in alltests._tests:
@@ -128,10 +130,20 @@ def runtests(test_regexps, results_directory, out,
                 runs_list = client.get_runs_in_plan(plan_id)
                 existing_runs = []
                 for browser in browser_factory.browsers:
-                    platform_string = "{} {}, {}".format(
-                        browser['browserName'].lower(),
-                        browser['version'].split('.')[0],
-                        browser['platform'].lower())
+                    # web
+                    if 'browserName' in browser.keys():
+                        platform = 'platform'
+                        version = 'version'
+                        name = 'browserName'
+                    # app
+                    else:
+                        platform = 'platformName'
+                        version = 'platformVersion'
+                        name = 'deviceName'
+                    platform_string = '{} {}, {}'.format(
+                        browser[name].lower(),
+                        browser[version].split('.')[0],
+                        browser[platform].lower())
                     run_found = False
                     for test_run in runs_list:
                         if test_run['config']:
@@ -150,10 +162,20 @@ def runtests(test_regexps, results_directory, out,
                 # add run_id to individual tests
                 for test_run in existing_runs:
                     for test in alltests._tests:
-                        test_context = "{} {}, {}".format(
-                            test.context['browserName'].lower(),
-                            test.context['version'].split('.')[0],
-                            test.context['platform'].lower())
+                        # web
+                        if 'browserName' in test.context.keys():
+                            platform = 'platform'
+                            version = 'version'
+                            name = 'browserName'
+                        # app
+                        else:
+                            platform = 'platformName'
+                            version = 'platformVersion'
+                            name = 'deviceName'
+                        test_context = '{} {}, {}'.format(
+                            test.context[name].lower(),
+                            test.context[version].split('.')[0],
+                            test.context[platform].lower())
                         if test_run['config']:
                             run_config = test_run['config'].lower()
                         else:
