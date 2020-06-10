@@ -47,6 +47,7 @@ class TestRailHelper(object):
                 }
             )
             self.plan_id = plan['id']
+            return plan
         except Exception as e:
             logger.debug("Could not create TestRail test plan \n" + str(e))
 
@@ -80,6 +81,18 @@ class TestRailHelper(object):
                 return run_data
             except Exception as e:
                 logger.debug("Could not create TestRail test run \n" + str(e))
+
+    def _get_entry_id(self, run_id):
+        endpoint = 'get_run/{}'.format(run_id)
+        run = self.client.send_get(endpoint)
+
+    def update_test_run(self, plan_id, entry_id, field, value):
+        endpoint = 'update_plan_entry/{}/{}'.format(plan_id, entry_id)
+        payload = {''.format(field) : ''.format(value)}
+        try:
+            self.client.send_post(endpoint, payload)
+        except Exception as e:
+            logger.debug("Could not update TestRail test run \n" + str(e))
 
     # add test case results to test run
     def send_results(self):
