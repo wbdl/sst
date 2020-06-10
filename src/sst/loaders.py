@@ -109,6 +109,7 @@ class TestLoader(unittest.TestLoader):
     def discoverTestsFromTree(self, dir_path, package=None):
         suite = self.suiteClass()
         names = os.listdir(dir_path)
+        names = [n for n in names if n != 'appium_config.py']
         if package is None:
             if os.path.isfile(os.path.join(dir_path, '__init__.py')):
                 package = self.importFromPath(dir_path)
