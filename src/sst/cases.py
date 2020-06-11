@@ -186,6 +186,9 @@ class SSTTestCase(testtools.TestCase):
                        testtools.content.text_content(page_source))
 
     def post_api_test_result(self):
+        if not self.run_id:
+            logger.debug("No run id found, skipping sending TestRail results")
+            return None
         logger.debug("Entered send result, run id is {}".format(self.run_id))
         try:
             result = self._get_case_result()
