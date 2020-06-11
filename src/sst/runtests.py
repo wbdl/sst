@@ -244,6 +244,9 @@ def find_client_credentials(module):
         mod_path = os.path.join(cwd, '{}.py'.format(module))
         if not os.path.isfile(mod_path):
             mod_path = os.path.join(os.path.dirname(cwd), '{}.py'.format(module))
+        if not os.path.isfile(mod_path):
+            mod_path = os.path.join(os.path.abspath(os.path.join(
+                cwd, "../..")), '{}.py'.format(module))
         return imp.load_source(module, os.path.abspath(mod_path))
 
 def set_client_credentials(client):
