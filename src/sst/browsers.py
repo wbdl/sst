@@ -109,13 +109,26 @@ class RemoteBrowserFactory(BrowserFactory):
             self.remote_url = remote_url
 
     def setup_for_test(self, test):
-        self.capabilities = test.context
 
         if self.webdriver_class == webdriver.Remote:
+            self.capabilities = {
+                'platform': test.context['platform'],
+                'browserName': test.context['browserName'],
+                'version': test.context['version'],
+                'screenResolution': test.context['screenResolution'],
+                'extendedDebugging': True,
+                'idleTimeout': 300}
+            if 'chromeOptions' in test.context:
+                self.capabilities.update({
+                    'chromeOptions': test.context['chromeOptions']})
+            elif 'moz:firefoxOptions' in test.context:
+                self.capabilities.update({
+                    'moz:firefoxOptions': test.context['moz:firefoxOptions']})
             self.capabilities['extendedDebugging'] = True
             self.capabilities['idleTimeout'] = 300
 
         elif self.webdriver_class == appium.webdriver.Remote:
+            self.capabilities = test.context
             self.capabilities['testobject_test_name'] = test.id()
     
         logger.debug('Remote capabilities set: {}'.format(self.capabilities))
