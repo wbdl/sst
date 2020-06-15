@@ -109,15 +109,13 @@ class RemoteBrowserFactory(BrowserFactory):
             self.remote_url = remote_url
 
     def setup_for_test(self, test):
-
         if self.webdriver_class == webdriver.Remote:
             self.capabilities = {
                 'platform': test.context['platform'],
                 'browserName': test.context['browserName'],
                 'version': test.context['version'],
-                'screenResolution': test.context['screenResolution'],
-                'extendedDebugging': True,
-                'idleTimeout': 300}
+                'screenResolution': test.context['screenResolution']
+                }
             if 'chromeOptions' in test.context:
                 self.capabilities.update({
                     'chromeOptions': test.context['chromeOptions']})
@@ -128,9 +126,25 @@ class RemoteBrowserFactory(BrowserFactory):
             self.capabilities['idleTimeout'] = 300
 
         elif self.webdriver_class == appium.webdriver.Remote:
-            self.capabilities = test.context
+            self.capabilities = {
+                'platformName': test.context['platformName'],
+                'deviceName': test.context['deviceName'],
+                'platformVersion': test.context['platformVersion'],
+                'testobject_api_key': test.context['testobject_api_key'],
+                'testobject_suite_name': test.context['testobject_suite_name'],
+                'testobject_report_results': test.context['testobject_report_results']
+                }
             self.capabilities['testobject_test_name'] = test.id()
-    
+            self.capabilities['extendedDebugging'] = True
+            if 'phoneOnly' in test.context:
+                self.capabilities.update(
+                    {'phoneOnly': test.context['phoneOnly']})
+            if 'deviceOrientation' in test.context:
+                self.capabilities.update(
+                    {'deviceOrientation': test.context['deviceOrientation']})
+            if 'newCommandTimeout' in test.context:
+                self.capabilities.update(
+                    {'newCommandTimeout': test.context['newCommandTimeout']})
         logger.debug('Remote capabilities set: {}'.format(self.capabilities))
 
     def browser(self):
