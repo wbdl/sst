@@ -233,7 +233,7 @@ def post_api_test_results():
     logger.debug("Sending test run results")
     try:
         config.api_client.send_results()
-    except testrail_api as e:
+    except APIError as e:
         logger.debug("Could not send test results \n" + str(e))
 
 def find_client_credentials(module):
