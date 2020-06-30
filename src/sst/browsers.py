@@ -177,6 +177,18 @@ class ChromeFactory(BrowserFactory):
         return self.webdriver_class(desired_capabilities=self.capabilities)
 
 
+class SafariFactory(BrowserFactory):
+
+    webdriver_class = webdriver.Safari
+
+    def setup_for_test(self, test):
+        self.capabilities = webdriver.safari.webdriver.DesiredCapabilities.SAFARI
+        logger.debug("Safari capabilities: {}".format(self.capabilities))
+
+    def browser(self):
+        return self.webdriver_class(desired_capabilities=self.capabilities)
+
+
 class AppiumFactory(BrowserFactory):
 
     webdriver_class = appium.webdriver.Remote
@@ -327,6 +339,7 @@ class FirefoxFactory(BrowserFactory):
 browser_factories = {
     'Chrome': ChromeFactory,
     'Firefox': FirefoxFactory,
+    'Safari': SafariFactory,
     'Ie': IeFactory,
     'Opera': OperaFactory,
     'PhantomJS': PhantomJSFactory,
