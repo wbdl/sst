@@ -28,6 +28,20 @@ class TestRailHelper(object):
     def _get_suite(self):
         return self.client.send_get('get_suites/{}'.format(self.project_id))
 
+    def get_plan(self, plan_id):
+        return self.client.send_get('get_plan/{}'.format(plan_id))
+
+    def get_runs_in_plan(self, plan_id):
+        plan = self.get_plan(plan_id)
+        try:
+            runs_list = []
+            for entry in plan['entries']:
+                for run in entry['runs']:
+                    runs_list.append(run)
+            return runs_list
+        except Exception as e:
+            logger.debug("Could not find test runs \n" + str(e))
+
     def create_test_plan(self):
         time = self._get_time()
         try:
@@ -37,6 +51,7 @@ class TestRailHelper(object):
                 }
             )
             self.plan_id = plan['id']
+            return plan
         except Exception as e:
             logger.debug("Could not create TestRail test plan \n" + str(e))
 
@@ -71,6 +86,18 @@ class TestRailHelper(object):
             except Exception as e:
                 logger.debug("Could not create TestRail test run \n" + str(e))
 
+    def _get_entry_id(self, run_id):
+        endpoint = 'get_run/{}'.format(run_id)
+        run = self.client.send_get(endpoint)
+
+    def update_test_run(self, plan_id, entry_id, field, value):
+        endpoint = 'update_plan_entry/{}/{}'.format(plan_id, entry_id)
+        payload = {''.format(field) : ''.format(value)}
+        try:
+            self.client.send_post(endpoint, payload)
+        except Exception as e:
+            logger.debug("Could not update TestRail test run \n" + str(e))
+
     # add test case results to test run
     def send_results(self):
         self.store_json_results(self.run_results)
@@ -90,6 +117,9 @@ class TestRailHelper(object):
             "comment": comment
         }
         self.store_json_results(result, case_id)
+        if not run_id:
+            logger.debug("Run ID does not exist")
+            return None
         try:
             run = self.client.send_post('add_result_for_case/{}/{}'
                                         .format(run_id, case_id), result)

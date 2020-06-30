@@ -113,23 +113,40 @@ class RemoteBrowserFactory(BrowserFactory):
     def setup_for_test(self, test):
         if self.webdriver_class == webdriver.Remote:
             self.capabilities = {
-                        'platform': test.context['platform'],
-                        'browserName': test.context['browserName'],
-                        'version': test.context['version'],
-                        'screenResolution': test.context['screenResolution'],
-                        'extendedDebugging': True,
-                        'idleTimeout': 300}
+                'platform': test.context['platform'],
+                'browserName': test.context['browserName'],
+                'version': test.context['version'],
+                'screenResolution': test.context['screenResolution']
+                }
             if 'chromeOptions' in test.context:
                 self.capabilities.update({
-                        'chromeOptions': test.context['chromeOptions']})
+                    'chromeOptions': test.context['chromeOptions']})
             elif 'moz:firefoxOptions' in test.context:
                 self.capabilities.update({
                     'moz:firefoxOptions': test.context['moz:firefoxOptions']})
+            self.capabilities['extendedDebugging'] = True
+            self.capabilities['idleTimeout'] = 300
 
         elif self.webdriver_class == appium.webdriver.Remote:
-            self.capabilities = self.creds.CAPABILITIES[0]
+            self.capabilities = {
+                'platformName': test.context['platformName'],
+                'deviceName': test.context['deviceName'],
+                'platformVersion': test.context['platformVersion'],
+                'testobject_api_key': test.context['testobject_api_key'],
+                'testobject_suite_name': test.context['testobject_suite_name'],
+                'testobject_report_results': test.context['testobject_report_results']
+                }
             self.capabilities['testobject_test_name'] = test.id()
-
+            self.capabilities['extendedDebugging'] = True
+            if 'phoneOnly' in test.context:
+                self.capabilities.update(
+                    {'phoneOnly': test.context['phoneOnly']})
+            if 'deviceOrientation' in test.context:
+                self.capabilities.update(
+                    {'deviceOrientation': test.context['deviceOrientation']})
+            if 'newCommandTimeout' in test.context:
+                self.capabilities.update(
+                    {'newCommandTimeout': test.context['newCommandTimeout']})
         logger.debug('Remote capabilities set: {}'.format(self.capabilities))
 
     def browser(self):
@@ -157,6 +174,18 @@ class ChromeFactory(BrowserFactory):
             chrome_options.add_argument("--proxy-server={0}".format(test.proxy_address))
         self.capabilities = chrome_options.to_capabilities()
         logger.debug("Chrome capabilities: {}".format(self.capabilities))
+
+    def browser(self):
+        return self.webdriver_class(desired_capabilities=self.capabilities)
+
+
+class SafariFactory(BrowserFactory):
+
+    webdriver_class = webdriver.Safari
+
+    def setup_for_test(self, test):
+        self.capabilities = webdriver.safari.webdriver.DesiredCapabilities.SAFARI
+        logger.debug("Safari capabilities: {}".format(self.capabilities))
 
     def browser(self):
         return self.webdriver_class(desired_capabilities=self.capabilities)
@@ -312,6 +341,7 @@ class FirefoxFactory(BrowserFactory):
 browser_factories = {
     'Chrome': ChromeFactory,
     'Firefox': FirefoxFactory,
+    'Safari': SafariFactory,
     'Ie': IeFactory,
     'Opera': OperaFactory,
     'PhantomJS': PhantomJSFactory,

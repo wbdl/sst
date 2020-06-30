@@ -56,6 +56,14 @@ def reset_directory(path):
             raise
     os.makedirs(path)
 
+def add_plan_id(option, opt_str, value, parser, arg_type, default_arg):
+    try:
+        next_arg = arg_type(parser.rargs[0])
+    except Exception:
+        next_arg = default_arg
+    else:
+        parser.rargs.pop(0)
+    setattr(parser.values, option.dest, next_arg)
 
 def get_common_options():
     parser = optparse.OptionParser(usage=usage)
@@ -107,9 +115,13 @@ def get_common_options():
     parser.add_option('-o', dest='results_directory',
                       default=None,
                       help='directory to output results to')
-    parser.add_option('-t', dest='api_test_results', action='store_true',
-                      default=False,
-                      help='select whether to send API test results')
+    parser.add_option('-t', dest='api_test_results',
+                      default=False, action='callback', nargs=0, type=int,
+                      callback=add_plan_id, callback_args=(int, True),
+                      help='select whether to send API test results.'
+                      ' Optionally takes a plan ID argument to log results to'
+                      ' an existing plan instead of defaulting to creating a'
+                      ' new plan')
     parser.add_option('--proxy', dest='use_proxy',
                       action='store_true', default=False,
                       help='enables BrowserMob proxy and stores HTTP archive'

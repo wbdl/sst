@@ -59,7 +59,6 @@ nosetests.xml
 pep8.log
 
 # sst
-config.py
 results
 src/sst.egg-info
 sst-deps
@@ -68,3 +67,6 @@ sst.wpr
 sst.wpu
 src/testproject/testproj.db
 .tox
+
+.DS_Store
+.tags*

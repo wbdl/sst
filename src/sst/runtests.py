@@ -96,32 +96,95 @@ def runtests(test_regexps, results_directory, out,
         set_client_credentials('testrail')
         client = config.api_client
         if browser_factory.remote_client:
-            client.create_test_plan()
-            for browser in browser_factory.browsers:
-                tests = [t.case_id for t in alltests._tests if t.case_id]
-                ids = list(OrderedDict.fromkeys(tests))
-                try:
-                    browser_name = 'browserName'
+            if config.api_test_results == True:
+                client.create_test_plan()
+                for browser in browser_factory.browsers:
+                    tests = [t.case_id for t in alltests._tests if t.case_id]
+                    ids = list(OrderedDict.fromkeys(tests))
+                    # web
+                    if 'browserName' in browser.keys():
+                        platform = 'platform'
+                        version = 'version'
+                        name = 'browserName'
+                    # app
+                    else:
+                        platform = 'platformName'
+                        version = 'platformVersion'
+                        name = 'deviceName'
                     platform_string = '{} - {} - {}'.format(
-                                       browser['platform'],
-                                       browser[browser_name],
-                                       browser['version'])
-                except KeyError:
-                    browser_name = 'deviceName'
-                    platform_string = '{} - {}'.format(
-                                       browser[browser_name],
-                                       browser['platformVersion'])
-                test_run = client.create_test_run(ids, platform_string)
-                logger.debug('Cases in current run ({} {}:{}): {}'.format(
-                              browser[browser_name],
-                              browser['version'],
-                              test_run['run_id'],
-                              ids))
-                for test in alltests._tests:
-                    if browser == test.context:
-                        test.run_id = test_run['run_id']
-            logger.debug('Created test runs {} using the above cases'
-                         .format(client.runs))
+                        browser[platform],
+                        browser[name],
+                        browser[version])
+                    test_run = client.create_test_run(ids, platform_string)
+                    logger.debug('Cases in current run ({} {}:{}): {}'.format(
+                                  browser[name],
+                                  browser[version],
+                                  test_run['run_id'],
+                                  ids))
+                    for test in alltests._tests:
+                        if browser == test.context:
+                            test.run_id = test_run['run_id']
+                    logger.debug('Created test runs {} using the above cases'
+                                 .format(client.runs))
+
+            elif type(config.api_test_results) == int:
+                plan_id = config.api_test_results
+                runs_list = client.get_runs_in_plan(plan_id)
+                existing_runs = []
+                for browser in browser_factory.browsers:
+                    # web
+                    if 'browserName' in browser.keys():
+                        platform = 'platform'
+                        version = 'version'
+                        name = 'browserName'
+                    # app
+                    else:
+                        platform = 'platformName'
+                        version = 'platformVersion'
+                        name = 'deviceName'
+                    platform_string = '{} {}, {}'.format(
+                        browser[name].lower(),
+                        browser[version].split('.')[0],
+                        browser[platform].lower())
+                    run_found = False
+                    for test_run in runs_list:
+                        if test_run['config']:
+                            run_config = test_run['config'].lower()
+                        else:
+                            run_config = test_run['name'].lower()
+                        if platform_string == run_config:
+                            run_found = True
+                            existing_runs.append(test_run)
+                            logger.debug("Found existing run for {}".format(platform_string))
+                    if not run_found:
+                        logger.debug("Could not find existing test run of matching capabilities: {}".format(platform_string))
+                        # TODO create new test run within the provided plan ID
+                        #logger.debug("Creating new test run in plan {}".format(plan_id))
+                        # client.create_test_run(ids, platform_string)
+                # add run_id to individual tests
+                for test_run in existing_runs:
+                    for test in alltests._tests:
+                        # web
+                        if 'browserName' in test.context.keys():
+                            platform = 'platform'
+                            version = 'version'
+                            name = 'browserName'
+                        # app
+                        else:
+                            platform = 'platformName'
+                            version = 'platformVersion'
+                            name = 'deviceName'
+                        test_context = '{} {}, {}'.format(
+                            test.context[name].lower(),
+                            test.context[version].split('.')[0],
+                            test.context[platform].lower())
+                        if test_run['config']:
+                            run_config = test_run['config'].lower()
+                        else:
+                            run_config = test_run['name'].lower()
+                        if test_context == run_config:
+                            test.run_id = test_run['id']
+
         else:
             tests = [t.case_id for t in alltests._tests if t.case_id]
             logger.debug('Cases in current run: {}'.format(tests))
@@ -183,6 +246,9 @@ def find_client_credentials(module):
         mod_path = os.path.join(cwd, '{}.py'.format(module))
         if not os.path.isfile(mod_path):
             mod_path = os.path.join(os.path.dirname(cwd), '{}.py'.format(module))
+        if not os.path.isfile(mod_path):
+            mod_path = os.path.join(os.path.abspath(os.path.join(
+                cwd, "../..")), '{}.py'.format(module))
         return imp.load_source(module, os.path.abspath(mod_path))
 
 def set_client_credentials(client):
