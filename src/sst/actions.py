@@ -46,6 +46,8 @@ import os
 import re
 import time
 
+import selenium.webdriver.safari.webdriver
+
 from datetime import datetime
 from functools import wraps
 from pdb import set_trace as debug
@@ -449,7 +451,10 @@ def get_text(id_or_elem):
 
     """
     element = _get_elem(id_or_elem)
-    return element.text
+    if isinstance(_test.browser, selenium.webdriver.safari.webdriver.WebDriver):
+        return element.text.strip()
+    else:
+        return element.text
 
 
 def toggle_checkbox(id_or_elem):
