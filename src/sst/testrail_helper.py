@@ -6,7 +6,7 @@ import logging
 from datetime import datetime
 from pytz import timezone
 from sst import config
-from .testrail_api import *
+from .testrail_api.testrail import *
 
 logger = logging.getLogger('SST')
 
