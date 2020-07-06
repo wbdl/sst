@@ -57,8 +57,9 @@ class APIClient(object):
 		url = self.__url + uri
 		request = urllib.request.Request(url)
 		if (method == 'POST'):
-			request.add_data(json.dumps(data))
-		auth = base64.b64encode('%s:%s' % (self.user, self.password))
+			request.data = json.dumps(data)
+		auth = base64.b64encode('{}:{}'.format(
+			self.user, self.password).encode('ascii'))
 		request.add_header('Authorization', 'Basic %s' % auth)
 		request.add_header('Content-Type', 'application/json')
 
