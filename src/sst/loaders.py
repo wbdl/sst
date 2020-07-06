@@ -17,7 +17,6 @@
 #   limitations under the License.
 #
 
-from builtins import object
 import contextlib
 import fnmatch
 import functools
@@ -30,7 +29,7 @@ import unittest.loader
 from sst import cases
 
 
-class NameMatcher(object):
+class NameMatcher:
     """Defines rules to select names.
 
     The rules are defined by two lists of regular expressions:

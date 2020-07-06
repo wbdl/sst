@@ -18,7 +18,6 @@
 #
 
 from builtins import range
-from builtins import object
 import logging
 import platform
 import shutil
@@ -41,7 +40,7 @@ from selenium.webdriver import ChromeOptions
 logger = logging.getLogger('SST')
 
 
-class BrowserFactory(object):
+class BrowserFactory:
     """Handle browser creation for tests.
 
     One instance is used for a given test run.

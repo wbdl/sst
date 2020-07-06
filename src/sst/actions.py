@@ -41,7 +41,6 @@ id, tag, text, class or other attributes. See the `get_element` documentation.
 
 from builtins import str
 from builtins import zip
-from builtins import object
 import codecs
 import errno
 import logging
@@ -117,7 +116,7 @@ class EndTest(Exception):
 debug.__doc__ = """Start the debugger, a shortcut for `pdb.set_trace()`."""
 
 
-class _Sentinel(object):
+class _Sentinel:
     def __repr__(self):
         return 'default'
 _sentinel = _Sentinel()

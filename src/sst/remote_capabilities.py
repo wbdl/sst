@@ -17,7 +17,6 @@
 #   limitations under the License.
 #
 
-from builtins import object
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import json
 import logging
@@ -28,7 +27,7 @@ logger = logging.getLogger('SST')
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
-class SauceLabs(object):
+class SauceLabs:
     """Helper class for creating an instance of sauceclient and posting results.
     Credentials should be defined in the directory where your tests
     are stored in a sauce_config.py module."""

@@ -19,7 +19,6 @@
 
 from __future__ import print_function
 
-from builtins import object
 import errno
 import logging
 import optparse
@@ -204,7 +203,7 @@ def get_opts(get_options, args=None):
     return (cmd_opts, args)
 
 
-class Cleaner(object):
+class Cleaner:
     """Store cleanup callables in a stack.
 
     This allows deferring cleanups until a processing end while setting up an

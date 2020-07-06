@@ -22,7 +22,6 @@
 #   inspired by PyVirtualDisplay: http://pypi.python.org/pypi/PyVirtualDisplay
 #
 
-from builtins import object
 import os
 import fnmatch
 import random
@@ -30,7 +29,7 @@ import subprocess
 import time
 
 
-class Xvfb(object):
+class Xvfb:
 
     def __init__(self, width=1024, height=768, colordepth=24):
         self.width = width
