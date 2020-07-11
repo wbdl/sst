@@ -49,10 +49,9 @@ import time
 from datetime import datetime
 from functools import wraps
 from pdb import set_trace as debug
-try:
-    from urllib.parse import urlparse, urljoin
-except ImportError:
-     from urlparse import urlparse, urljoin
+from future import standard_library
+standard_library.install_aliases()
+from urllib.parse import urlparse, urljoin
 
 from selenium.webdriver.common import action_chains, keys
 from selenium.webdriver.common.by import By
