@@ -39,8 +39,6 @@ id, tag, text, class or other attributes. See the `get_element` documentation.
 
 """
 
-from builtins import str
-from builtins import zip
 import codecs
 import errno
 import logging
@@ -51,7 +49,10 @@ import time
 from datetime import datetime
 from functools import wraps
 from pdb import set_trace as debug
-from  urllib.parse import urljoin, urlparse
+try:
+    from urllib.parse import urlparse, urljoin
+except ImportError:
+     from urlparse import urlparse, urljoin
 
 from selenium.webdriver.common import action_chains, keys
 from selenium.webdriver.common.by import By

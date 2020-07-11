@@ -18,7 +18,6 @@ from __future__ import absolute_import
 #   limitations under the License.
 #
 
-from builtins import str
 import imp
 import junitxml
 import logging

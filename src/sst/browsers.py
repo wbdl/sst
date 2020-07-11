@@ -17,7 +17,6 @@
 #   limitations under the License.
 #
 
-from builtins import range
 import logging
 import platform
 import shutil
@@ -51,7 +50,8 @@ class BrowserFactory:
     creds = None
 
     def __init__(self):
-        super(BrowserFactory, self).__init__()
+        pass
+        #super(BrowserFactory, self).__init__()
 
     def setup_for_test(self, test):
         """Setup the browser for the given test.
