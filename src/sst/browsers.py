@@ -39,7 +39,7 @@ from selenium.webdriver import ChromeOptions
 logger = logging.getLogger('SST')
 
 
-class BrowserFactory:
+class BrowserFactory(object):
     """Handle browser creation for tests.
 
     One instance is used for a given test run.
@@ -50,8 +50,7 @@ class BrowserFactory:
     creds = None
 
     def __init__(self):
-        pass
-        #super(BrowserFactory, self).__init__()
+        super(BrowserFactory, self).__init__()
 
     def setup_for_test(self, test):
         """Setup the browser for the given test.
