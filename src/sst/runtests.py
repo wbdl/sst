@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 #
 #   Copyright (c) 2011,2012,2013 Canonical Ltd.
 #
@@ -17,6 +16,8 @@ from __future__ import absolute_import
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+
+from __future__ import absolute_import
 
 import imp
 import junitxml
