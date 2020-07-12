@@ -55,13 +55,16 @@ class APIClient:
 
     def __send_request(self, method, uri, data):
         url = self.__url + uri
+        try:
+            auth = str(
+                base64.b64encode(
+                    bytes('%s:%s' % (self.user, self.password), 'utf-8')
+                ),
+                'ascii'
+            ).strip()
+        except TypeError:
+            auth = base64.b64encode('%s:%s' % (self.user, self.password))
 
-        auth = str(
-            base64.b64encode(
-                bytes('%s:%s' % (self.user, self.password), 'utf-8')
-            ),
-            'ascii'
-        ).strip()
         headers = {'Authorization': 'Basic ' + auth}
 
         if method == 'POST':
@@ -71,7 +74,10 @@ class APIClient:
                 files['attachment'].close()
             else:
                 headers['Content-Type'] = 'application/json'
-                payload = bytes(json.dumps(data), 'utf-8')
+                try:
+                    payload = bytes(json.dumps(data), 'utf-8')
+                except TypeError:
+                    payload = bytes(json.dumps(data))
                 response = requests.post(url, headers=headers, data=payload)
         else:
             headers['Content-Type'] = 'application/json'
