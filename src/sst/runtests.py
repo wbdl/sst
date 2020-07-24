@@ -122,8 +122,8 @@ def runtests(test_regexps, results_directory, out,
                     for test in alltests._tests:
                         if browser == test.context:
                             test.run_id = test_run['run_id']
-                    logger.debug('Created test runs {} using the above cases'
-                                 .format(client.runs))
+                logger.debug('Created test runs {} using the above cases'
+                                .format(client.runs))
 
             elif type(config.api_test_results) == int:
                 plan_id = config.api_test_results
