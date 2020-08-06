@@ -207,7 +207,7 @@ def runtests(test_regexps, results_directory, out,
     txt_res = results.TextTestResult(out, failfast=failfast, verbosity=2)
     if report_format == 'xml':
         results_file = os.path.join(results_directory, 'results.xml')
-        xml_stream = file(results_file, 'wb')
+        xml_stream = open(results_file, 'w')
         result = testtools.testresult.MultiTestResult(
             txt_res, junitxml.JUnitXmlResult(xml_stream))
         result.failfast = failfast
