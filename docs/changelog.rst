@@ -9,6 +9,10 @@
 Official Releases:
 ------------------
 
+version **1.0** (2020)
+*************************************
+* WBDL enhancements from 2014-present
+
 version **0.2.5** (under development)
 *************************************
 * removed 'disable javascript' feature from Firefox
