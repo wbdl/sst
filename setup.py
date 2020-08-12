@@ -82,7 +82,8 @@ params = dict(
 
     # metadata for upload to PyPI
     author=AUTHOR,
-    author_email=AUTHOR_EMAIL,
+    maintainer=MAINTAINER,
+    maintainer_email=MAINTAINER_EMAIL,
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
     keywords=KEYWORDS,
