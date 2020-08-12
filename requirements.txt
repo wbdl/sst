@@ -7,7 +7,7 @@ testtools==2.4.0
 browsermob-proxy==0.7.1
 git+git://github.com/cgoldberg/sauceclient.git@aa27b7d
 pytz==2013.7
-enum34==1.1.6
+enum34==1.1.6; python_version < '3.0'
 urllib3==1.24.3
 python-dateutil
 future==0.18.2
