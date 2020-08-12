@@ -250,12 +250,6 @@ class SSTScriptTestCase(SSTTestCase):
 
         # get id from script name for use when posting
         # results to an external test case management tool
- #       try:
- #           self.case_id = int(filter(lambda x: x.isdigit(), self.script_name))
- #       except ValueError:
-            # if script name doesn't contain a number skip it
- #           pass
-
         try:
             script_id = [x for x in self.script_name if x.isdigit()]
             self.case_id = int(''.join(script_id))
