@@ -46,8 +46,6 @@ import os
 import re
 import time
 
-import selenium.webdriver.safari.webdriver
-
 from datetime import datetime
 from functools import wraps
 from pdb import set_trace as debug
@@ -452,9 +450,7 @@ def get_text(id_or_elem):
     """
     element = _get_elem(id_or_elem)
     try:
-        if (isinstance(_test.browser,
-                selenium.webdriver.safari.webdriver.WebDriver) or
-                _test.browser.capabilities['browserName'].lower() == 'safari'):
+        if _test.browser.capabilities['browserName'].lower() == 'safari':
             return element.text.strip()
     except:
         logger.debug('Cound not verify Safari browser for get_text.')
