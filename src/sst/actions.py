@@ -451,10 +451,14 @@ def get_text(id_or_elem):
 
     """
     element = _get_elem(id_or_elem)
-    if isinstance(_test.browser, selenium.webdriver.safari.webdriver.WebDriver):
-        return element.text.strip()
-    else:
-        return element.text
+    try:
+        if (isinstance(_test.browser,
+                selenium.webdriver.safari.webdriver.WebDriver) or
+                _test.browser.capabilities['browserName'].lower() == 'safari'):
+            return element.text.strip()
+    except:
+        logger.debug('Cound not verify Safari browser for get_text.')
+    return element.text
 
 
 def toggle_checkbox(id_or_elem):
