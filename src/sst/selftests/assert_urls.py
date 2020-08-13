@@ -1,7 +1,9 @@
+from future import standard_library
+standard_library.install_aliases()
 import sst
 import sst.actions
 
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 
 sst.actions.set_base_url('http://localhost:%s/' % sst.DEVSERVER_PORT)

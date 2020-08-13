@@ -18,19 +18,25 @@
 #
 
 from __future__ import print_function
+from __future__ import absolute_import
 
+from builtins import zip
+from builtins import str
+from builtins import range
 import ast
 import logging
 import json
 import os
 import pdb
+import string
+
 import testtools
 import testtools.content
 import traceback
 
 from selenium import webdriver
 from selenium.common import exceptions
-from testrail_api.testrail import APIError
+from .testrail_api import *
 from sst import (
     actions,
     browsers,
@@ -198,7 +204,7 @@ class SSTTestCase(testtools.TestCase):
                                               result['case_id'],
                                               result['status_id'],
                                               result['comment'])
-        except APIError, e:
+        except APIError as e:
             logger.debug("Could not send test case result \n" + str(e))
 
     def _get_case_result(self):
@@ -245,7 +251,8 @@ class SSTScriptTestCase(SSTTestCase):
         # get id from script name for use when posting
         # results to an external test case management tool
         try:
-            self.case_id = int(filter(lambda x: x.isdigit(), self.script_name))
+            script_id = [x for x in self.script_name if x.isdigit()]
+            self.case_id = int(''.join(script_id))
         except ValueError:
             # if script name doesn't contain a number skip it
             pass

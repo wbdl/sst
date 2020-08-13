@@ -22,7 +22,7 @@ from browsermobproxy import Server
 
 logger = logging.getLogger('SST')
 
-class Proxy(object):
+class Proxy:
 
         proxy = None
         proxy_server = None

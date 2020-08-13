@@ -32,7 +32,7 @@ from sst import __version__
 
 NAME = 'sst'
 PACKAGES = ['sst', 'sst.scripts', 'sst.tests', 'sst.testrail_api']
-DESCRIPTION = 'SST - Web Test Framework'
+DESCRIPTION = 'SST - Web and Native App Test Framework'
 URL = 'http://testutils.org/sst'
 LICENSE = 'Apache'
 
@@ -45,7 +45,7 @@ REQUIREMENTS = [req for req in requirements if 'git+git' not in req]
 REQUIREMENTS.append('sauceclient==1.0.1')
 
 CLASSIFIERS = [
-    'Development Status :: 4 - Beta',
+    'Development Status :: 5 - Production/Stable',
     'Environment :: Console',
     'Environment :: Web Environment',
     'Intended Audience :: Developers',
@@ -54,16 +54,21 @@ CLASSIFIERS = [
     'Programming Language :: Python :: 2',
     'Programming Language :: Python :: 2.6',
     'Programming Language :: Python :: 2.7',
+    'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
     'Operating System :: OS Independent',
     'Topic :: Software Development :: Libraries',
     'Topic :: Software Development :: Libraries :: Python Modules',
     'Topic :: Software Development :: Testing',
+    'Topic :: Software Development :: Quality Assurance',
     'Topic :: Internet :: WWW/HTTP :: Browsers',
 ]
 
 AUTHOR = 'Canonical Online Services Team'
-AUTHOR_EMAIL = 'cgoldberg _at_ gmail.com'
-KEYWORDS = ('selenium webdriver test testing web automation').split(' ')
+MAINTAINER = 'Warner Bros. Digital Labs'
+MAINTAINER_EMAIL = 'qa@wbdl.com'
+KEYWORDS = ('selenium appium webdriver test testing web automation').split(' ')
 
 params = dict(
     name=NAME,
@@ -77,7 +82,8 @@ params = dict(
 
     # metadata for upload to PyPI
     author=AUTHOR,
-    author_email=AUTHOR_EMAIL,
+    maintainer=MAINTAINER,
+    maintainer_email=MAINTAINER_EMAIL,
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
     keywords=KEYWORDS,

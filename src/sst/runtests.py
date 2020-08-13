@@ -17,6 +17,8 @@
 #   limitations under the License.
 #
 
+from __future__ import absolute_import
+
 import imp
 import junitxml
 import logging
@@ -26,7 +28,7 @@ import sys
 import testtools
 
 from collections import OrderedDict
-from testrail_api.testrail import APIError
+from .testrail_api import *
 from sst import (
     browsers,
     cases,
@@ -205,7 +207,7 @@ def runtests(test_regexps, results_directory, out,
     txt_res = results.TextTestResult(out, failfast=failfast, verbosity=2)
     if report_format == 'xml':
         results_file = os.path.join(results_directory, 'results.xml')
-        xml_stream = file(results_file, 'wb')
+        xml_stream = open(results_file, 'w')
         result = testtools.testresult.MultiTestResult(
             txt_res, junitxml.JUnitXmlResult(xml_stream))
         result.failfast = failfast
@@ -231,7 +233,7 @@ def post_api_test_results():
     logger.debug("Sending test run results")
     try:
         config.api_client.send_results()
-    except APIError, e:
+    except APIError as e:
         logger.debug("Could not send test results \n" + str(e))
 
 def find_client_credentials(module):

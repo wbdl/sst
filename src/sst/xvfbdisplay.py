@@ -29,7 +29,7 @@ import subprocess
 import time
 
 
-class Xvfb(object):
+class Xvfb:
 
     def __init__(self, width=1024, height=768, colordepth=24):
         self.width = width
@@ -61,8 +61,7 @@ class Xvfb(object):
             self.proc = None
 
     def search_for_free_display(self):
-        ls = map(lambda x: int(x.split('X')[1].split('-')[0]),
-                 self._lock_files())
+        ls = [int(x.split('X')[1].split('-')[0]) for x in self._lock_files()]
         min_display_num = 1000
         if len(ls):
             display_num = max(min_display_num, max(ls) + 1)

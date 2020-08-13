@@ -65,7 +65,7 @@ def set_cwd_to_tmp(test):
     """
     test.test_base_dir = tempfile.mkdtemp(prefix='mytests-', suffix='.tmp')
     test.addCleanup(shutil.rmtree, test.test_base_dir, True)
-    current_dir = os.getcwdu()
+    current_dir = os.getcwd()
     test.addCleanup(os.chdir, current_dir)
     os.chdir(test.test_base_dir)
 
@@ -82,7 +82,7 @@ def protect_imports(test):
 
     def cleanup_modules():
         # Remove all added modules
-        added = [m for m in sys.modules.keys() if m not in orig_modules]
+        added = [m for m in list(sys.modules.keys()) if m not in orig_modules]
         if added:
             for m in added:
                 del sys.modules[m]
