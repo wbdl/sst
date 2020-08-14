@@ -560,16 +560,23 @@ def write_textfield(id_or_elem, new_text, check=True, clear=True):
     # clear field with send_keys(), don't use clear() (see
     # http://code.google.com/p/selenium/issues/detail?id=214 for rationale)
     if clear:
-        textfield.send_keys(keys.Keys().CONTROL, 'a')
-        textfield.send_keys(keys.Keys().DELETE)
-
-        # added check to see if send_keys actually worked, if not, try clear()
         current_text = textfield.get_attribute('value')
         if current_text:
-            msg = 'Textfield: %r - did not clear using send_keys().  Executing clear() instead.' \
+            textfield.send_keys(keys.Keys().CONTROL, 'a')
+            textfield.send_keys(keys.Keys().DELETE)
+            current_text = textfield.get_attribute('value')
+
+            # added check to see if send_keys actually worked, if not, try clear()
+            if current_text:
+                msg = 'Textfield: %r - did not clear using send_keys().  Executing clear() and BACKSPACE button.' \
             % (_element_to_string(textfield))
             logger.debug(msg)
             textfield.clear()
+
+            #As of 8/14/20 the code above isn't clearing the text field when
+            #using chromedriver sometimes. Code below is a workaround.
+            while textfield.get_attribute('value') != '':
+                textfield.send_keys(keys.Keys().BACKSPACE)
 
     if isinstance(new_text, str):
         textfield.send_keys(new_text)
