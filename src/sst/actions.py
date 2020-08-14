@@ -567,7 +567,6 @@ def write_textfield(id_or_elem, new_text, check=True, clear=True):
             current_text = textfield.get_attribute('value')
 
             # added check to see if send_keys actually worked, if not, try clear()
-            #current_text = textfield.get_attribute('value')
             if current_text:
                 msg = 'Textfield: %r - did not clear using send_keys().  Executing clear() and BACKSPACE button.' \
             % (_element_to_string(textfield))
