@@ -135,8 +135,7 @@ class RemoteBrowserFactory(BrowserFactory):
             self.capabilities = {
                 'platformName': test.context['platformName'],
                 'deviceName': test.context['deviceName'],
-                'platformVersion': test.context['platformVersion'],
-                'browserName': test.context['browserName']
+                'platformVersion': test.context['platformVersion']
             }
             if not 'browserName' in test.context:
                 self.capabilities.update(
