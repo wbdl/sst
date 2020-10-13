@@ -82,11 +82,17 @@ class RemoteBrowserFactory(BrowserFactory):
             self.creds = runtests.set_client_credentials('saucelabs')
             try:
                 if 'CAPABILITIES' in dir(self.creds):
-                    self.browsers = self.creds.CAPABILITIES
-                    self.remote_url = self.creds.APPIUM_URL
+                    # mobile device
                     self.webdriver_class = appium.webdriver.Remote
-                    apibase = self.creds.API_BASE
-                else:
+                    self.browsers = self.creds.CAPABILITIES
+                    if 'browserName' not in self.creds.CAPABILITIES[0].keys():
+                        # test object
+                        self.remote_url = self.creds.APPIUM_URL
+                        apibase = self.creds.API_BASE
+                    else: # mobile web emulator
+                        self.remote_url = self.creds.URL
+                        apibase = None
+                else: # desktop web vm
                     self.browsers = self.creds.BROWSERS
                     self.remote_url = self.creds.URL
                     apibase = None
@@ -129,13 +135,21 @@ class RemoteBrowserFactory(BrowserFactory):
             self.capabilities = {
                 'platformName': test.context['platformName'],
                 'deviceName': test.context['deviceName'],
-                'platformVersion': test.context['platformVersion'],
-                'testobject_api_key': test.context['testobject_api_key'],
-                'testobject_suite_name': test.context['testobject_suite_name'],
-                'testobject_report_results': test.context['testobject_report_results']
-                }
-            self.capabilities['testobject_test_name'] = test.id()
+                'platformVersion': test.context['platformVersion']
+            }
+            if not 'browserName' in test.context:
+                self.capabilities.update(
+                    {
+                    'testobject_api_key': test.context['testobject_api_key'],
+                    'testobject_suite_name': test.context['testobject_suite_name'],
+                    'testobject_report_results': test.context['testobject_report_results']
+                    }
+                )
+                self.capabilities['testobject_test_name'] = test.id()
             self.capabilities['extendedDebugging'] = True
+            if 'browserName' in test.context:
+                self.capabilities.update(
+                    {'browserName': test.context['browserName']})
             if 'phoneOnly' in test.context:
                 self.capabilities.update(
                     {'phoneOnly': test.context['phoneOnly']})
