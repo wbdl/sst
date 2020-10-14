@@ -86,13 +86,19 @@ class RemoteBrowserFactory(BrowserFactory):
                     self.webdriver_class = appium.webdriver.Remote
                     self.browsers = self.creds.CAPABILITIES
                     if 'browserName' not in self.creds.CAPABILITIES[0].keys():
-                        # test object
-                        self.remote_url = self.creds.APPIUM_URL
-                        apibase = self.creds.API_BASE
-                    else: # mobile web emulator
+                            self.remote_url = self.creds.APPIUM_URL
+                            if 'API_BASE' in self.creds.CAPABILITIES[0].keys():
+                                # test object real device
+                                apibase = self.creds.API_BASE
+                            else:
+                                # app simulator/emulator
+                                apibase = None
+                    else:
+                        # mobile web simulator/emulator
                         self.remote_url = self.creds.URL
                         apibase = None
-                else: # desktop web vm
+                else:
+                    # desktop web vm
                     self.browsers = self.creds.BROWSERS
                     self.remote_url = self.creds.URL
                     apibase = None
