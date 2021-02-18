@@ -159,6 +159,9 @@ class RemoteBrowserFactory(BrowserFactory):
             if 'newCommandTimeout' in test.context:
                 self.capabilities.update(
                     {'newCommandTimeout': test.context['newCommandTimeout']})
+            if 'appiumVersion' in test.context:
+                self.capabilities.update(
+                    {'appiumVersion': test.context['appiumVersion']})
         logger.debug('Remote capabilities set: {}'.format(self.capabilities))
 
     def browser(self):
